@@ -16,13 +16,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK (v9/v10 Compat Mode) -->
+  <!-- Firebase SDK (100% 무료 Firestore 전용) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
   <script>
-    // Firebase Config (발급받으신 Key 적용)
     const firebaseConfig = {
       apiKey: "AIzaSyB9FO8x6YQOSj78X-Nx8tpIxlxTNKyA3Xo",
       authDomain: "architecture8-a41e4.firebaseapp.com",
@@ -35,7 +33,6 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
     tailwind.config = {
       theme: {
@@ -45,17 +42,8 @@
             display: ['Syne', 'sans-serif'],
             mono: ['Courier New', 'monospace']
           },
-          colors: {
-            brand: {
-              black: '#000000',
-              white: '#ffffff',
-              darkgray: '#121212',
-              midgray: '#262626'
-            }
-          },
           boxShadow: {
             'sharp-white': '4px 4px 0px 0px #ffffff',
-            'sharp-black': '4px 4px 0px 0px #000000',
             'sharp-gray': '4px 4px 0px 0px #262626',
           }
         }
@@ -84,10 +72,6 @@
       transform: translate(-1px, -1px);
       box-shadow: 5px 5px 0px 0px #ffffff;
     }
-    .file-drop-area {
-      border: 2px dashed #404040;
-      transition: border-color 0.2s ease, background-color 0.2s ease;
-    }
   </style>
 </head>
 <body class="min-h-full flex flex-col font-sans bg-black text-white selection:bg-white selection:text-black border-t-4 border-white">
@@ -106,12 +90,8 @@
       </a>
 
       <nav class="hidden md:flex items-center gap-8 text-xs tracking-widest uppercase font-bold">
-        <button onclick="showSection('gallery')" id="nav-gallery" class="text-white border-b-2 border-white pb-1">
-          ALL WORKS
-        </button>
-        <button onclick="showSection('artists')" id="nav-artists" class="text-zinc-500 hover:text-white border-b-2 border-transparent pb-1">
-          ARTISTS DIRECTORY
-        </button>
+        <button onclick="showSection('gallery')" id="nav-gallery" class="text-white border-b-2 border-white pb-1">ALL WORKS</button>
+        <button onclick="showSection('artists')" id="nav-artists" class="text-zinc-500 hover:text-white border-b-2 border-transparent pb-1">ARTISTS DIRECTORY</button>
       </nav>
 
       <div id="auth-widget" class="flex items-center gap-4"></div>
@@ -120,20 +100,17 @@
 
   <!-- MAIN -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-8">
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <!-- SECTION 1: GALLERY -->
     <section id="section-gallery" class="space-y-8">
       <div class="border-2 border-white p-6 md:p-10 bg-black relative shadow-sharp-white">
         <div class="max-w-2xl relative z-10">
           <div class="inline-block px-3 py-1 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-widest mb-4">
-            [ FIREBASE REALTIME SYNC ONLINE ]
+            [ 100% FREE REALTIME SYNC ]
           </div>
           <h1 class="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-tight leading-none mb-4">
             대흥동 예술가<br>작품 아카이브 & QR
           </h1>
-          <p class="text-zinc-400 text-sm font-normal leading-relaxed mb-6">
-            모든 기기에서 실시간 공유되는 대흥동 지역 작가 포트폴리오 플랫폼입니다. 내 PC에서 바로 작품을 등록하면 실시간 연동 QR 코드가 발급됩니다.
+          <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+            모든 기기에서 실시간 공유되는 대흥동 지역 작가 포트폴리오 플랫폼입니다. 작품을 등록하면 실시간 연동 QR 코드가 자동 생성됩니다.
           </p>
           <div class="flex flex-wrap gap-4">
             <button onclick="handleRegisterArtBtnClick()" class="btn-sharp px-6 py-3 text-xs flex items-center gap-2">
@@ -146,7 +123,6 @@
         </div>
       </div>
 
-      <!-- FILTER -->
       <div class="border border-white/20 p-4 bg-zinc-950 flex flex-col md:flex-row justify-between items-center gap-4">
         <div id="category-filters" class="flex items-center gap-2 overflow-x-auto font-mono text-xs w-full md:w-auto">
           <button onclick="filterGallery('All')" class="cat-btn px-3 py-1.5 bg-white text-black font-bold uppercase border border-white">ALL</button>
@@ -157,26 +133,18 @@
         </div>
       </div>
 
-      <!-- GRID -->
       <div id="artwork-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </section>
 
-    <!-- SECTION 2: ARTISTS -->
     <section id="section-artists" class="hidden space-y-6">
       <div class="border-b-2 border-white pb-4 flex justify-between items-end">
         <div>
           <h2 class="font-display text-3xl font-extrabold uppercase">REGISTERED ARTISTS</h2>
-          <p class="text-zinc-400 text-xs font-mono mt-1">대흥동 아카이빙에 등록된 작가 목록입니다.</p>
+          <p class="text-zinc-400 text-xs font-mono mt-1">등록된 작가 목록입니다.</p>
         </div>
         <button onclick="openAuthModal('register')" class="btn-sharp px-4 py-2 text-xs">+ 작가 등록</button>
       </div>
       <div id="artists-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </section>
-
-    <!-- SECTION 3: ARTIST PROFILE -->
-    <section id="section-artist-profile" class="hidden space-y-8">
-      <div id="artist-profile-header" class="border-2 border-white p-6 md:p-8 bg-zinc-950"></div>
-      <div id="artist-artworks-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </section>
   </main>
 
@@ -189,15 +157,15 @@
         <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-zinc-500 border-b-2 border-transparent">[ REGISTER ]</button>
       </div>
       <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
-        <input type="text" id="login-name" required placeholder="작가명을 입력하세요" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
+        <input type="text" id="login-name" required placeholder="작가명" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
         <input type="password" id="login-password" required placeholder="비밀번호" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
         <button type="submit" class="btn-sharp w-full py-3 text-xs">로그인 &rarr;</button>
       </form>
       <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-        <input type="text" id="reg-name" required placeholder="작가명 입력" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
+        <input type="text" id="reg-name" required placeholder="작가명" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
         <input type="password" id="reg-password" required placeholder="비밀번호" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
-        <textarea id="reg-bio" rows="2" placeholder="작가 소개글..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
-        <button type="submit" class="btn-sharp w-full py-3 text-xs">작가 등록 완료 &rarr;</button>
+        <textarea id="reg-bio" rows="2" placeholder="작가 소개..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
+        <button type="submit" class="btn-sharp w-full py-3 text-xs">등록 완료 &rarr;</button>
       </form>
     </div>
   </div>
@@ -216,7 +184,7 @@
         </select>
         <input type="file" id="art-file" accept="image/*" required class="w-full bg-black border border-zinc-700 p-2 text-xs text-white">
         <textarea id="art-desc" rows="3" placeholder="작품 설명..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
-        <button type="submit" class="btn-sharp w-full py-3 text-xs">작품 등록 & DB 실시간 저장 &rarr;</button>
+        <button type="submit" class="btn-sharp w-full py-3 text-xs">작품 등록 (실시간 공유) &rarr;</button>
       </form>
     </div>
   </div>
@@ -234,7 +202,6 @@
     function showSection(name) {
       document.getElementById('section-gallery').classList.add('hidden');
       document.getElementById('section-artists').classList.add('hidden');
-      document.getElementById('section-artist-profile').classList.add('hidden');
       document.getElementById(`section-${name}`).classList.remove('hidden');
     }
 
@@ -252,11 +219,26 @@
       }
     }
 
-    function openAuthModal(tab) {
-      document.getElementById('auth-modal').classList.remove('hidden');
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
+    function openAuthModal(tab) { document.getElementById('auth-modal').classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function switchAuthTab(tab) {
+      const loginTab = document.getElementById('tab-login');
+      const regTab = document.getElementById('tab-register');
+      const loginForm = document.getElementById('form-login');
+      const regForm = document.getElementById('form-register');
+
+      if (tab === 'login') {
+        loginTab.className = "flex-1 py-3 text-white border-b-2 border-white";
+        regTab.className = "flex-1 py-3 text-zinc-500 border-b-2 border-transparent";
+        loginForm.classList.remove('hidden');
+        regForm.classList.add('hidden');
+      } else {
+        regTab.className = "flex-1 py-3 text-white border-b-2 border-white";
+        loginTab.className = "flex-1 py-3 text-zinc-500 border-b-2 border-transparent";
+        regForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+      }
     }
 
     function handleRegister(e) {
@@ -271,7 +253,7 @@
         localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
         renderAuthWidget();
         closeModal('auth-modal');
-        alert("작가 등록 및 로그인 성공!");
+        alert("작가 등록 완료!");
       });
     }
 
@@ -288,16 +270,19 @@
             localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
             renderAuthWidget();
             closeModal('auth-modal');
-            alert("로그인 완료!");
+            alert("로그인 성공!");
           } else {
-            alert("작가명 또는 비밀번호가 틀립니다.");
+            alert("정보가 일치하지 않습니다.");
           }
         });
     }
 
-    function openArtworkModal() {
-      document.getElementById('artwork-modal').classList.remove('hidden');
+    function handleRegisterArtBtnClick() {
+      if (!currentUser) { alert("먼저 작가로 로그인하세요."); openAuthModal('login'); }
+      else openArtworkModal();
     }
+
+    function openArtworkModal() { document.getElementById('artwork-modal').classList.remove('hidden'); }
 
     function handleCreateArtwork(e) {
       e.preventDefault();
@@ -306,28 +291,28 @@
       const title = document.getElementById('art-title').value.trim();
       const category = document.getElementById('art-category').value;
       const desc = document.getElementById('art-desc').value.trim();
-      const file = document.getElementById('art-file').files[0];
+      const fileInput = document.getElementById('art-file');
 
-      if (!file) return;
+      if (!fileInput.files[0]) return;
 
-      const storageRef = storage.ref(`artworks/${Date.now()}_${file.name}`);
-      storageRef.put(file).then(snapshot => {
-        return snapshot.ref.getDownloadURL();
-      }).then(downloadURL => {
-        return db.collection("artworks").add({
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageBase64 = event.target.result;
+
+        db.collection("artworks").add({
           title,
           category,
           desc,
-          imageUrl: downloadURL,
+          imageUrl: imageBase64,
           artistId: currentUser.id,
           artistName: currentUser.name,
           createdAt: new Date().toISOString()
+        }).then(() => {
+          closeModal('artwork-modal');
+          alert("작품 등록 완료! 다른 기기에서도 즉시 보여집니다.");
         });
-      }).then(() => {
-        closeModal('artwork-modal');
-        alert("작품 등록 완료! 다른 기기에서도 실시간으로 동기화됩니다.");
-        loadArtworksFromFirebase();
-      });
+      };
+      reader.readAsDataURL(fileInput.files[0]);
     }
 
     function loadArtworksFromFirebase() {
