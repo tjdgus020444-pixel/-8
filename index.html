@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK (Firestore 전용 - Storage 완전히 제거) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -66,6 +66,14 @@
       transform: translate(-1px, -1px);
       box-shadow: 5px 5px 0px 0px #ffffff;
     }
+    .card-hover {
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card-hover:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px 0px #ffffff;
+    }
   </style>
 </head>
 <body class="min-h-full flex flex-col font-sans bg-black text-white border-t-4 border-white">
@@ -104,7 +112,7 @@
             대흥동 예술가<br>작품 아카이브 & QR
           </h1>
           <p class="text-zinc-400 text-sm leading-relaxed mb-6">
-            모든 기기에서 실시간 공유되는 대흥동 지역 작가 포트폴리오 플랫폼입니다. 작품을 등록하면 실시간 연동 QR 코드가 자동 생성됩니다.
+            모든 기기에서 실시간 공유되는 대흥동 지역 작가 포트폴리오 플랫폼입니다. 작품을 클릭하면 개별 연동 QR 코드가 표시됩니다.
           </p>
           <div class="flex flex-wrap gap-4">
             <button onclick="handleRegisterArtBtnClick()" class="btn-sharp px-6 py-3 text-xs flex items-center gap-2">
@@ -143,6 +151,7 @@
   </main>
 
   <!-- MODALS -->
+  <!-- 1. Auth Modal -->
   <div id="auth-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4">
     <div class="bg-black border-2 border-white max-w-md w-full p-6 relative">
       <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -164,6 +173,7 @@
     </div>
   </div>
 
+  <!-- 2. New Artwork Upload Modal -->
   <div id="artwork-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4">
     <div class="bg-black border-2 border-white max-w-lg w-full p-6 relative">
       <button onclick="closeModal('artwork-modal')" class="absolute top-4 right-4 text-white"><i class="fa-solid fa-xmark"></i></button>
@@ -183,8 +193,43 @@
     </div>
   </div>
 
+  <!-- 3. Artwork Detail & QR Modal -->
+  <div id="detail-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4">
+    <div class="bg-black border-2 border-white max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 relative">
+      <button onclick="closeModal('detail-modal')" class="absolute top-4 right-4 text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- Image -->
+        <div class="w-full md:w-1/2">
+          <img id="detail-img" src="" class="w-full aspect-square object-cover border-2 border-white">
+        </div>
+        
+        <!-- Info & QR -->
+        <div class="w-full md:w-1/2 flex flex-col justify-between space-y-4">
+          <div>
+            <span id="detail-category" class="font-mono text-xs bg-white text-black font-bold px-2 py-0.5">CATEGORY</span>
+            <h3 id="detail-title" class="font-display text-2xl font-black uppercase mt-2">WORK TITLE</h3>
+            <p id="detail-artist" class="font-mono text-xs text-zinc-400 mt-1">BY ARTIST</p>
+            <p id="detail-desc" class="text-xs text-zinc-300 mt-4 leading-relaxed whitespace-pre-line"></p>
+          </div>
+
+          <!-- QR Section -->
+          <div class="border border-zinc-800 p-4 bg-zinc-950 flex items-center gap-4">
+            <div id="qrcode" class="p-1 bg-white border border-white"></div>
+            <div>
+              <p class="font-mono text-[10px] text-zinc-400 uppercase font-bold">[ ARTWORK QR CODE ]</p>
+              <p class="text-[11px] text-zinc-300 mt-1">스마트폰 카메라인식 시 이 작품으로 바로 연결됩니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let currentUser = JSON.parse(localStorage.getItem('daeheung_user')) || null;
+    let allArtworks = [];
+    let qrcodeObj = null;
 
     window.onload = function() {
       renderAuthWidget();
@@ -277,7 +322,6 @@
 
     function openArtworkModal() { document.getElementById('artwork-modal').classList.remove('hidden'); }
 
-    // 이미지 경량화 압축 함수
     function resizeImage(file, maxWidth, maxHeight, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -347,19 +391,54 @@
 
     function loadArtworksFromFirebase() {
       db.collection("artworks").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-        const grid = document.getElementById('artwork-grid');
-        grid.innerHTML = snapshot.docs.map(doc => {
-          const art = doc.data();
-          return `
-            <div class="border-2 border-white bg-black p-3 shadow-sharp-gray">
-              <img src="${art.imageUrl}" class="w-full aspect-square object-cover mb-2 border border-white">
-              <span class="font-mono text-[10px] bg-white text-black font-bold px-1">${art.category}</span>
-              <h4 class="font-bold uppercase mt-1">${art.title}</h4>
-              <p class="font-mono text-xs text-zinc-400">BY ${art.artistName}</p>
-            </div>
-          `;
-        }).join('');
+        allArtworks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderGalleryGrid(allArtworks);
       }, err => console.error(err));
+    }
+
+    function filterGallery(cat) {
+      if (cat === 'All') renderGalleryGrid(allArtworks);
+      else renderGalleryGrid(allArtworks.filter(a => a.category === cat));
+    }
+
+    function renderGalleryGrid(items) {
+      const grid = document.getElementById('artwork-grid');
+      grid.innerHTML = items.map(art => `
+        <div onclick="openDetailModal('${art.id}')" class="border-2 border-white bg-black p-3 shadow-sharp-gray card-hover">
+          <img src="${art.imageUrl}" class="w-full aspect-square object-cover mb-2 border border-white">
+          <span class="font-mono text-[10px] bg-white text-black font-bold px-1">${art.category}</span>
+          <h4 class="font-bold uppercase mt-1 text-sm">${art.title}</h4>
+          <p class="font-mono text-xs text-zinc-400">BY ${art.artistName}</p>
+        </div>
+      `).join('');
+    }
+
+    function openDetailModal(artId) {
+      const art = allArtworks.find(a => a.id === artId);
+      if (!art) return;
+
+      document.getElementById('detail-img').src = art.imageUrl;
+      document.getElementById('detail-category').innerText = art.category;
+      document.getElementById('detail-title').innerText = art.title;
+      document.getElementById('detail-artist').innerText = `BY ${art.artistName}`;
+      document.getElementById('detail-desc').innerText = art.desc || "설명이 없습니다.";
+
+      // Generate QR Code
+      const qrContainer = document.getElementById('qrcode');
+      qrContainer.innerHTML = "";
+      
+      const currentUrl = window.location.href.split('?')[0] + `?artId=${art.id}`;
+      
+      qrcodeObj = new QRCode(qrContainer, {
+        text: currentUrl,
+        width: 80,
+        height: 80,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      document.getElementById('detail-modal').classList.remove('hidden');
     }
 
     function loadArtistsFromFirebase() {
