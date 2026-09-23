@@ -7,16 +7,36 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons CDN -->
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- QRCode.js Library CDN -->
+  <!-- QRCode.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- Google Fonts: Space Grotesk, Syne & Noto Sans KR -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDK (v9/v10 Compat Mode) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
   <script>
+    // Firebase Config (발급받으신 Key 적용)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9FO8x6YQOSj78X-Nx8tpIxlxTNKyA3Xo",
+      authDomain: "architecture8-a41e4.firebaseapp.com",
+      projectId: "architecture8-a41e4",
+      storageBucket: "architecture8-a41e4.firebasestorage.app",
+      messagingSenderId: "675299744571",
+      appId: "1:675299744571:web:f9aee1adc57312bd64751e",
+      measurementId: "G-2466Q9TCWE"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
     tailwind.config = {
       theme: {
         extend: {
@@ -30,8 +50,7 @@
               black: '#000000',
               white: '#ffffff',
               darkgray: '#121212',
-              midgray: '#262626',
-              lightgray: '#e5e5e5'
+              midgray: '#262626'
             }
           },
           boxShadow: {
@@ -45,27 +64,10 @@
   </script>
 
   <style>
-    /* Sharp 0px Border Overrides */
-    * {
-      border-radius: 0px !important;
-    }
-
-    /* Crisp Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #000000;
-      border-left: 1px solid #262626;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #ffffff;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #cccccc;
-    }
-
+    * { border-radius: 0px !important; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #000000; border-left: 1px solid #262626; }
+    ::-webkit-scrollbar-thumb { background: #ffffff; }
     .btn-sharp {
       border: 1px solid #ffffff;
       background: #000000;
@@ -82,30 +84,19 @@
       transform: translate(-1px, -1px);
       box-shadow: 5px 5px 0px 0px #ffffff;
     }
-    .btn-sharp:active {
-      transform: translate(2px, 2px);
-      box-shadow: 1px 1px 0px 0px #ffffff;
-    }
-
     .file-drop-area {
       border: 2px dashed #404040;
       transition: border-color 0.2s ease, background-color 0.2s ease;
-    }
-    .file-drop-area.dragover {
-      border-color: #ffffff;
-      background-color: #121212;
     }
   </style>
 </head>
 <body class="min-h-full flex flex-col font-sans bg-black text-white selection:bg-white selection:text-black border-t-4 border-white">
 
-  <!-- HEADER / NAV -->
+  <!-- HEADER -->
   <header class="sticky top-0 z-40 bg-black border-b border-white/20 px-4 lg:px-8 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      
-      <!-- Brand Logo -->
-      <a href="#" onclick="showSection('gallery')" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 bg-white text-black font-display font-black text-2xl flex items-center justify-center border border-white group-hover:bg-black group-hover:text-white transition-colors">
+      <a href="#" onclick="showSection('gallery')" class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-white text-black font-display font-black text-2xl flex items-center justify-center border border-white">
           大
         </div>
         <div>
@@ -114,500 +105,158 @@
         </div>
       </a>
 
-      <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8 text-xs tracking-widest uppercase font-bold">
-        <button onclick="showSection('gallery')" id="nav-gallery" class="text-white hover:text-zinc-300 transition-colors flex items-center gap-2 border-b-2 border-white pb-1">
-          <i class="fa-solid fa-grid-2"></i> ALL WORKS
+        <button onclick="showSection('gallery')" id="nav-gallery" class="text-white border-b-2 border-white pb-1">
+          ALL WORKS
         </button>
-        <button onclick="showSection('artists')" id="nav-artists" class="text-zinc-500 hover:text-white transition-colors flex items-center gap-2 border-b-2 border-transparent pb-1">
-          <i class="fa-solid fa-users"></i> ARTISTS DIRECTORY
+        <button onclick="showSection('artists')" id="nav-artists" class="text-zinc-500 hover:text-white border-b-2 border-transparent pb-1">
+          ARTISTS DIRECTORY
         </button>
       </nav>
 
-      <!-- Auth Widget -->
-      <div id="auth-widget" class="flex items-center gap-4">
-        <!-- JS Populated -->
-      </div>
+      <div id="auth-widget" class="flex items-center gap-4"></div>
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
+  <!-- MAIN -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-8">
-    
-    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- SECTION 1: PUBLIC GALLERY -->
+    <!-- SECTION 1: GALLERY -->
     <section id="section-gallery" class="space-y-8">
-      
-      <!-- Banner Hero -->
-      <div class="border-2 border-white p-6 md:p-10 bg-black relative overflow-hidden shadow-sharp-white">
-        <div class="absolute -right-10 -bottom-10 text-[160px] font-display font-black text-white/5 select-none pointer-events-none leading-none">
-          QR
-        </div>
+      <div class="border-2 border-white p-6 md:p-10 bg-black relative shadow-sharp-white">
         <div class="max-w-2xl relative z-10">
           <div class="inline-block px-3 py-1 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-widest mb-4">
-            [ 대흥동 예술가 & 작품 온라인 아카이빙 플랫폼 ]
+            [ FIREBASE REALTIME SYNC ONLINE ]
           </div>
-          <h1 class="font-display text-3xl md:text-5xl font-extrabold uppercase tracking-tight leading-tight mb-4">
-            대흥동 예술가 아카이빙<br><span class="text-zinc-400 font-mono text-xl md:text-2xl">ARTIST & ARCHITECTURE PORTFOLIO</span>
+          <h1 class="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-tight leading-none mb-4">
+            대흥동 예술가<br>작품 아카이브 & QR
           </h1>
-          <p class="text-zinc-400 text-sm md:text-base font-normal leading-relaxed mb-6">
-            대흥동 지역 작가들의 회화, 조각, 건축, 디지털 작품을 기록합니다. 작품을 올리면 오프라인 전시에 활용 가능한 **고화질 QR 코드**가 자동 생성됩니다.
+          <p class="text-zinc-400 text-sm font-normal leading-relaxed mb-6">
+            모든 기기에서 실시간 공유되는 대흥동 지역 작가 포트폴리오 플랫폼입니다. 내 PC에서 바로 작품을 등록하면 실시간 연동 QR 코드가 발급됩니다.
           </p>
           <div class="flex flex-wrap gap-4">
             <button onclick="handleRegisterArtBtnClick()" class="btn-sharp px-6 py-3 text-xs flex items-center gap-2">
-              <i class="fa-solid fa-plus"></i> 내 PC에서 작품 등록
+              <i class="fa-solid fa-plus"></i> 작품 등록하기
             </button>
-            <button onclick="showSection('artists')" class="px-6 py-3 border border-zinc-700 bg-zinc-900 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2">
-              <i class="fa-solid fa-address-book"></i> 대흥동 작가진 둘러보기
+            <button onclick="showSection('artists')" class="px-6 py-3 border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase">
+              작가 목록 둘러보기
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Category Filter Bar & Search -->
-      <div class="border border-white/20 p-4 bg-zinc-950 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
-        <div id="category-filters" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 font-mono text-xs">
-          <button onclick="filterGallery('All')" class="cat-btn active px-3 py-1.5 bg-white text-black font-bold uppercase border border-white">ALL [전체]</button>
-          <button onclick="filterGallery('PAINTING')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">PAINTING (회화)</button>
-          <button onclick="filterGallery('ARCHITECTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">ARCHITECTURE (건축)</button>
-          <button onclick="filterGallery('SCULPTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">SCULPTURE (조형)</button>
-          <button onclick="filterGallery('INSTALLATION')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">INSTALLATION (설치)</button>
-          <button onclick="filterGallery('DIGITAL')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">DIGITAL (디지털)</button>
-          <button onclick="filterGallery('PHOTOGRAPHY')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">PHOTOGRAPHY (사진)</button>
-        </div>
-
-        <div class="relative w-full md:w-72">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-          <input type="text" id="search-input" oninput="searchGallery()" placeholder="작품명 / 작가명 검색..." class="w-full bg-black border border-zinc-700 focus:border-white pl-9 pr-4 py-2 text-xs text-white uppercase placeholder:text-zinc-600 focus:outline-none">
+      <!-- FILTER -->
+      <div class="border border-white/20 p-4 bg-zinc-950 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div id="category-filters" class="flex items-center gap-2 overflow-x-auto font-mono text-xs w-full md:w-auto">
+          <button onclick="filterGallery('All')" class="cat-btn px-3 py-1.5 bg-white text-black font-bold uppercase border border-white">ALL</button>
+          <button onclick="filterGallery('ARCHITECTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">ARCHITECTURE (건축)</button>
+          <button onclick="filterGallery('PAINTING')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">PAINTING (회화)</button>
+          <button onclick="filterGallery('SCULPTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">SCULPTURE (조형)</button>
+          <button onclick="filterGallery('INSTALLATION')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">INSTALLATION (설치)</button>
         </div>
       </div>
 
-      <!-- Artwork Grid -->
-      <div id="artwork-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <!-- JS Grid Render -->
-      </div>
+      <!-- GRID -->
+      <div id="artwork-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </section>
 
-    <!-- SECTION 2: ARTISTS DIRECTORY -->
+    <!-- SECTION 2: ARTISTS -->
     <section id="section-artists" class="hidden space-y-6">
       <div class="border-b-2 border-white pb-4 flex justify-between items-end">
         <div>
-          <h2 class="font-display text-3xl font-extrabold uppercase tracking-tight">대흥동 참여 작가</h2>
-          <p class="text-zinc-400 text-xs font-mono mt-1">대흥동 아카이빙 플랫폼에 등록된 작가 디렉토리입니다.</p>
+          <h2 class="font-display text-3xl font-extrabold uppercase">REGISTERED ARTISTS</h2>
+          <p class="text-zinc-400 text-xs font-mono mt-1">대흥동 아카이빙에 등록된 작가 목록입니다.</p>
         </div>
-        <button onclick="openAuthModal('register')" class="btn-sharp px-4 py-2 text-xs">
-          + 작가 등록
-        </button>
+        <button onclick="openAuthModal('register')" class="btn-sharp px-4 py-2 text-xs">+ 작가 등록</button>
       </div>
-
-      <div id="artists-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Dynamic Artist Cards -->
-      </div>
+      <div id="artists-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
 
-    <!-- SECTION 3: ARTIST BLOG / PORTFOLIO PAGE -->
+    <!-- SECTION 3: ARTIST PROFILE -->
     <section id="section-artist-profile" class="hidden space-y-8">
-      <!-- Profile Header Banner -->
-      <div id="artist-profile-header" class="border-2 border-white p-6 md:p-8 bg-zinc-950 shadow-sharp-gray">
-        <!-- JS Populated -->
-      </div>
-
-      <div class="border-b-2 border-white pb-3 flex justify-between items-center">
-        <h3 class="font-display text-2xl font-bold uppercase flex items-center gap-2">
-          <i class="fa-solid fa-box text-sm"></i> ARTWORKS CATALOGUE
-        </h3>
-        <span id="artist-art-count" class="font-mono text-xs text-zinc-400">TOTAL 0 WORKS</span>
-      </div>
-
-      <!-- Artist Artworks Grid -->
-      <div id="artist-artworks-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <!-- JS Populated -->
-      </div>
+      <div id="artist-profile-header" class="border-2 border-white p-6 md:p-8 bg-zinc-950"></div>
+      <div id="artist-artworks-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </section>
-
   </main>
 
   <!-- MODALS -->
-
-  <!-- 1. AUTH MODAL (Login / Register) -->
-  <div id="auth-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-black border-2 border-white max-w-md w-full p-6 md:p-8 relative shadow-sharp-white">
-      <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 w-8 h-8 bg-white text-black hover:bg-zinc-300 font-bold flex items-center justify-center transition-colors">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <!-- Tabs -->
+  <div id="auth-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4">
+    <div class="bg-black border-2 border-white max-w-md w-full p-6 relative">
+      <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-white"><i class="fa-solid fa-xmark"></i></button>
       <div class="flex border-b-2 border-zinc-800 mb-6 font-mono text-xs font-bold uppercase">
-        <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-white border-b-2 border-white">
-          [ 로그인 ]
-        </button>
-        <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-zinc-500 hover:text-white border-b-2 border-transparent">
-          [ 작가 등록 ]
-        </button>
+        <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-white border-b-2 border-white">[ LOGIN ]</button>
+        <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-zinc-500 border-b-2 border-transparent">[ REGISTER ]</button>
       </div>
-
-      <!-- Login Form -->
       <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">ARTIST NAME / ID *</label>
-          <input type="text" id="login-name" required placeholder="등록된 작가명을 입력하세요" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
-        </div>
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">PASSWORD *</label>
-          <input type="password" id="login-password" required placeholder="비밀번호" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
-        </div>
-        <button type="submit" class="btn-sharp w-full py-3 text-xs mt-2">
-          로그인 진행 &rarr;
-        </button>
+        <input type="text" id="login-name" required placeholder="작가명을 입력하세요" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
+        <input type="password" id="login-password" required placeholder="비밀번호" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
+        <button type="submit" class="btn-sharp w-full py-3 text-xs">로그인 &rarr;</button>
       </form>
-
-      <!-- Register Form -->
       <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">ARTIST NAME *</label>
-          <input type="text" id="reg-name" required placeholder="예: 김대흥" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
-        </div>
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">PASSWORD *</label>
-          <input type="password" id="reg-password" required placeholder="4자리 이상 입력" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
-        </div>
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">BIO / STATEMENT</label>
-          <textarea id="reg-bio" rows="2" placeholder="대흥동에서의 작업 배경 및 작가 소개..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white resize-none"></textarea>
-        </div>
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">PROFILE IMAGE (LOCAL PC UPLOAD)</label>
-          <div class="file-drop-area p-4 text-center cursor-pointer relative bg-zinc-950 hover:bg-zinc-900" id="reg-avatar-drop">
-            <input type="file" id="reg-avatar-file" accept="image/*" onchange="handleAvatarFileSelect(this)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-            <div id="reg-avatar-preview-container" class="flex items-center justify-center gap-3">
-              <i class="fa-solid fa-cloud-arrow-up text-zinc-500 text-lg"></i>
-              <span id="reg-avatar-label" class="font-mono text-[11px] text-zinc-400">PC 프로필 이미지 선택</span>
-            </div>
-          </div>
-        </div>
-        <button type="submit" class="btn-sharp w-full py-3 text-xs mt-2">
-          작가 등록 완료 &rarr;
-        </button>
+        <input type="text" id="reg-name" required placeholder="작가명 입력" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
+        <input type="password" id="reg-password" required placeholder="비밀번호" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
+        <textarea id="reg-bio" rows="2" placeholder="작가 소개글..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
+        <button type="submit" class="btn-sharp w-full py-3 text-xs">작가 등록 완료 &rarr;</button>
       </form>
     </div>
   </div>
 
-  <!-- 2. CREATE ARTWORK MODAL (LOCAL PC UPLOAD) -->
-  <div id="artwork-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-black border-2 border-white max-w-lg w-full p-6 md:p-8 relative shadow-sharp-white max-h-[90vh] overflow-y-auto">
-      <button onclick="closeModal('artwork-modal')" class="absolute top-4 right-4 w-8 h-8 bg-white text-black hover:bg-zinc-300 font-bold flex items-center justify-center transition-colors">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="mb-6 border-b border-zinc-800 pb-3">
-        <h3 class="font-display text-2xl font-extrabold uppercase flex items-center gap-2">
-          <i class="fa-solid fa-square-plus"></i> NEW WORK UPLOAD
-        </h3>
-        <p class="font-mono text-xs text-zinc-400 mt-1">PC의 이미지 파일로 대흥동 아카이브에 작품을 등록하세요.</p>
-      </div>
-
+  <div id="artwork-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4">
+    <div class="bg-black border-2 border-white max-w-lg w-full p-6 relative">
+      <button onclick="closeModal('artwork-modal')" class="absolute top-4 right-4 text-white"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="font-display text-2xl font-extrabold uppercase mb-4">NEW WORK UPLOAD</h3>
       <form onsubmit="handleCreateArtwork(event)" class="space-y-4">
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">WORK TITLE *</label>
-          <input type="text" id="art-title" required placeholder="예: 대흥동 근대건축 요소 연구 #01" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">CATEGORY *</label>
-            <select id="art-category" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white font-mono">
-              <option value="ARCHITECTURE">ARCHITECTURE (건축 / 공간)</option>
-              <option value="PAINTING">PAINTING (회화)</option>
-              <option value="SCULPTURE">SCULPTURE (조형 / 조각)</option>
-              <option value="INSTALLATION">INSTALLATION (설치 미술)</option>
-              <option value="DIGITAL">DIGITAL (디지털 / 미디어)</option>
-              <option value="PHOTOGRAPHY">PHOTOGRAPHY (사진)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">YEAR</label>
-            <input type="number" id="art-year" value="2026" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white font-mono">
-          </div>
-        </div>
-
-        <!-- Local File Drag & Drop Upload Zone -->
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">SELECT LOCAL IMAGE FILE (PC) *</label>
-          <div class="file-drop-area p-6 text-center cursor-pointer relative bg-zinc-950 hover:bg-zinc-900 border-2 border-dashed border-zinc-700" id="art-drop-zone">
-            <input type="file" id="art-file-input" accept="image/*" required onchange="handleArtFileSelect(this)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-            <div id="art-file-preview-box" class="flex flex-col items-center justify-center gap-2">
-              <i class="fa-solid fa-file-arrow-up text-2xl text-zinc-400"></i>
-              <span id="art-file-name" class="font-mono text-xs text-zinc-300 font-bold">내 PC에서 이미지 파일 선택</span>
-              <span class="text-[10px] text-zinc-500 font-mono">PNG, JPG, WEBP 지원 (클릭 또는 드래그)</span>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">WORK DESCRIPTION</label>
-          <textarea id="art-desc" rows="3" placeholder="작품 기획 의도, 건축 도면 설명, 도심 아카이빙 배경 등..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white resize-none"></textarea>
-        </div>
-
-        <button type="submit" class="btn-sharp w-full py-3 text-xs mt-2 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-qrcode"></i> 작품 등록 및 QR 코드 자동 생성 &rarr;
-        </button>
+        <input type="text" id="art-title" required placeholder="작품 제목" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
+        <select id="art-category" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white font-mono">
+          <option value="ARCHITECTURE">ARCHITECTURE (건축 / 공간)</option>
+          <option value="PAINTING">PAINTING (회화)</option>
+          <option value="SCULPTURE">SCULPTURE (조형)</option>
+          <option value="INSTALLATION">INSTALLATION (설치)</option>
+        </select>
+        <input type="file" id="art-file" accept="image/*" required class="w-full bg-black border border-zinc-700 p-2 text-xs text-white">
+        <textarea id="art-desc" rows="3" placeholder="작품 설명..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
+        <button type="submit" class="btn-sharp w-full py-3 text-xs">작품 등록 & DB 실시간 저장 &rarr;</button>
       </form>
-    </div>
-  </div>
-
-  <!-- 3. ARTWORK DETAIL MODAL -->
-  <div id="detail-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-black border-2 border-white max-w-3xl w-full p-6 md:p-8 relative shadow-sharp-white max-h-[90vh] overflow-y-auto">
-      <button onclick="closeModal('detail-modal')" class="absolute top-4 right-4 w-8 h-8 bg-white text-black hover:bg-zinc-300 font-bold flex items-center justify-center transition-colors">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div id="detail-modal-body">
-        <!-- JS Dynamic Fill -->
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. PRINT / WALL PLACARD QR MODAL -->
-  <div id="qr-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-black border-2 border-white max-w-md w-full p-6 text-center relative shadow-sharp-white">
-      <button onclick="closeModal('qr-modal')" class="absolute top-4 right-4 w-8 h-8 bg-white text-black hover:bg-zinc-300 font-bold flex items-center justify-center transition-colors">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="inline-block border border-white bg-black px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-zinc-300 mb-4">
-        DAEHEUNG EXHIBITION TAG // QR
-      </div>
-      <h3 id="qr-modal-title" class="font-display font-black text-2xl uppercase tracking-tight">TITLE</h3>
-      <p id="qr-modal-artist" class="font-mono text-xs text-zinc-400 mt-1 mb-6">BY ARTIST NAME</p>
-
-      <!-- QR Box -->
-      <div class="p-6 bg-white border-2 border-white inline-block mx-auto mb-6">
-        <div id="qr-code-box" class="flex justify-center items-center"></div>
-      </div>
-
-      <p class="font-mono text-[11px] text-zinc-400 mb-6">스마트폰 스캔 시 대흥동 아카이브 웹페이지로 연결됩니다.</p>
-
-      <div class="flex gap-3">
-        <button onclick="copyQRLink()" class="flex-1 py-3 border border-zinc-700 bg-zinc-900 hover:bg-white hover:text-black text-white font-mono text-xs font-bold uppercase transition-colors">
-          <i class="fa-regular fa-copy"></i> 링크 복사
-        </button>
-        <button onclick="printQRLabel()" class="btn-sharp flex-1 py-3 text-xs">
-          <i class="fa-solid fa-print"></i> 캡션 라벨 인쇄
-        </button>
-      </div>
     </div>
   </div>
 
   <script>
-    /* ==========================================================================
-       1. INITIAL SEED DATA & STATE
-       ========================================================================== */
-
-    function generatePlaceholderSVG(title, subtitle) {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" fill="#000000">
-        <rect width="600" height="600" fill="#0d0d0d"/>
-        <line x1="0" y1="0" x2="600" y2="600" stroke="#262626" stroke-width="2"/>
-        <line x1="600" y1="0" x2="0" y2="600" stroke="#262626" stroke-width="2"/>
-        <rect x="150" y="150" width="300" height="300" fill="#000000" stroke="#ffffff" stroke-width="4"/>
-        <text x="300" y="290" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="22" font-weight="bold">${title}</text>
-        <text x="300" y="330" text-anchor="middle" fill="#888888" font-family="monospace" font-size="14">${subtitle}</text>
-      </svg>`;
-      return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-    }
-
-    const initialArtists = [
-      {
-        id: "artist_1",
-        name: "김모노 (KIM MONO)",
-        password: "demo",
-        bio: "대흥동 근대 건축물과 정방형 그리드의 구조적 미학을 연구하고 오프라인 캡션으로 시각화하는 예술가입니다.",
-        avatar: generatePlaceholderSVG("KIM MONO", "DAEHEUNG ARTIST"),
-        createdAt: "2026-01-10"
-      },
-      {
-        id: "artist_2",
-        name: "박건축 (PARK ARCHI)",
-        password: "demo",
-        bio: "구도심 대흥동의 오래된 상가 기둥 및 건축 공간 형태를 3D 및 드로잉 아카이빙으로 재해석합니다.",
-        avatar: generatePlaceholderSVG("PARK ARCHI", "DAEHEUNG ARTIST"),
-        createdAt: "2026-02-15"
-      }
-    ];
-
-    const initialArtworks = [
-      {
-        id: "art_101",
-        artistId: "artist_2",
-        artistName: "박건축 (PARK ARCHI)",
-        title: "대흥동 구도심 상가 입면 아카이브 #01",
-        category: "ARCHITECTURE",
-        year: 2026,
-        image: generatePlaceholderSVG("DAEHEUNG ARCHI #01", "ARCHITECTURE / 2026"),
-        description: "1970년대 대흥동 구도심 건축물의 기하학적 그리드와 벽면의 명암 구도를 비례 도면으로 기록한 연구 작품.",
-        createdAt: "2026-03-01"
-      },
-      {
-        id: "art_102",
-        artistId: "artist_1",
-        artistName: "김모노 (KIM MONO)",
-        title: "BRUTALIST STRUCTURE NO. 04",
-        category: "PAINTING",
-        year: 2026,
-        image: generatePlaceholderSVG("STRUCTURE NO.04", "PAINTING / 2026"),
-        description: "강렬한 직선 오프셋과 흑백 명암 단차를 통해 공간감을 극대화한 아크릴 필드 작업.",
-        createdAt: "2026-03-05"
-      },
-      {
-        id: "art_103",
-        artistId: "artist_1",
-        artistName: "김모노 (KIM MONO)",
-        title: "MONOCHROME VOID INSTALLATION",
-        category: "INSTALLATION",
-        year: 2025,
-        image: generatePlaceholderSVG("VOID INSTALLATION", "INSTALLATION / 2025"),
-        description: "대흥동 야외 관람객을 위해 철제 프레임과 암묵적 그림자를 결합한 고대비 공간 설치물.",
-        createdAt: "2026-03-10"
-      }
-    ];
-
-    let artists = JSON.parse(localStorage.getItem('daeheung_artists')) || initialArtists;
-    let artworks = JSON.parse(localStorage.getItem('daeheung_artworks')) || initialArtworks;
     let currentUser = JSON.parse(localStorage.getItem('daeheung_user')) || null;
-
-    let activeFilterCategory = 'All';
-    let activeQRDetailArt = null;
-    let tempUploadedArtBase64 = null;
-    let tempUploadedAvatarBase64 = null;
-
-    function saveData() {
-      try {
-        localStorage.setItem('daeheung_artists', JSON.stringify(artists));
-        localStorage.setItem('daeheung_artworks', JSON.stringify(artworks));
-        if (currentUser) {
-          localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
-        } else {
-          localStorage.removeItem('daeheung_user');
-        }
-      } catch(e) {
-        showToast('저장 용량이 초과되었습니다. 이미지 크기를 줄여주세요.', 'error');
-      }
-    }
-
-    /* ==========================================================================
-       2. APP INITIALIZATION & NAVIGATION
-       ========================================================================== */
+    let activeFilter = 'All';
 
     window.onload = function() {
       renderAuthWidget();
-      renderGallery();
-      checkURLHash();
+      loadArtworksFromFirebase();
+      loadArtistsFromFirebase();
     };
 
-    function showSection(sectionName, param = null) {
+    function showSection(name) {
       document.getElementById('section-gallery').classList.add('hidden');
       document.getElementById('section-artists').classList.add('hidden');
       document.getElementById('section-artist-profile').classList.add('hidden');
-
-      document.getElementById('nav-gallery').className = 'text-zinc-500 hover:text-white transition-colors flex items-center gap-2 border-b-2 border-transparent pb-1';
-      document.getElementById('nav-artists').className = 'text-zinc-500 hover:text-white transition-colors flex items-center gap-2 border-b-2 border-transparent pb-1';
-
-      if (sectionName === 'gallery') {
-        document.getElementById('section-gallery').classList.remove('hidden');
-        document.getElementById('nav-gallery').className = 'text-white transition-colors flex items-center gap-2 border-b-2 border-white pb-1 font-bold';
-        renderGallery();
-      } else if (sectionName === 'artists') {
-        document.getElementById('section-artists').classList.remove('hidden');
-        document.getElementById('nav-artists').className = 'text-white transition-colors flex items-center gap-2 border-b-2 border-white pb-1 font-bold';
-        renderArtistsList();
-      } else if (sectionName === 'artist-profile') {
-        document.getElementById('section-artist-profile').classList.remove('hidden');
-        renderArtistProfilePage(param);
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.getElementById(`section-${name}`).classList.remove('hidden');
     }
-
-    function checkURLHash() {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#art-')) {
-        const artId = hash.replace('#', '');
-        const targetArt = artworks.find(a => a.id === artId);
-        if (targetArt) {
-          openArtworkDetail(targetArt.id);
-        }
-      }
-    }
-
-    /* ==========================================================================
-       3. AUTHENTICATION WIDGET & ACTIONS
-       ========================================================================== */
 
     function renderAuthWidget() {
       const container = document.getElementById('auth-widget');
       if (currentUser) {
         container.innerHTML = `
-          <div class="flex items-center gap-3">
-            <button onclick="showSection('artist-profile', '${currentUser.id}')" class="flex items-center gap-2.5 p-1 px-3 border border-zinc-700 bg-zinc-950 hover:border-white transition-colors">
-              <img src="${currentUser.avatar}" class="w-6 h-6 object-cover border border-white">
-              <span class="font-mono text-xs font-bold text-white uppercase">${currentUser.name}</span>
-            </button>
-            <button onclick="openArtworkModal()" class="btn-sharp px-3 py-1.5 text-xs">
-              + WORKS UPLOAD
-            </button>
-            <button onclick="handleLogout()" class="text-zinc-500 hover:text-white p-2 text-xs" title="LOGOUT">
-              <i class="fa-solid fa-power-off"></i>
-            </button>
-          </div>
+          <span class="font-mono text-xs text-white font-bold">${currentUser.name}</span>
+          <button onclick="openArtworkModal()" class="btn-sharp px-3 py-1.5 text-xs">+ UPLOAD</button>
         `;
       } else {
         container.innerHTML = `
-          <button onclick="openAuthModal('login')" class="px-3 py-1.5 border border-zinc-700 hover:border-white text-xs font-mono font-bold uppercase transition-colors">
-            LOGIN
-          </button>
-          <button onclick="openAuthModal('register')" class="btn-sharp px-3 py-1.5 text-xs">
-            REGISTER
-          </button>
+          <button onclick="openAuthModal('login')" class="btn-sharp px-3 py-1.5 text-xs">LOGIN / REGISTER</button>
         `;
       }
     }
 
-    function openAuthModal(tab = 'login') {
-      switchAuthTab(tab);
+    function openAuthModal(tab) {
       document.getElementById('auth-modal').classList.remove('hidden');
     }
-
-    function switchAuthTab(tab) {
-      const loginTab = document.getElementById('tab-login');
-      const regTab = document.getElementById('tab-register');
-      const loginForm = document.getElementById('form-login');
-      const regForm = document.getElementById('form-register');
-
-      if (tab === 'login') {
-        loginTab.className = "flex-1 py-3 text-white border-b-2 border-white";
-        regTab.className = "flex-1 py-3 text-zinc-500 hover:text-white border-b-2 border-transparent";
-        loginForm.classList.remove('hidden');
-        regForm.classList.add('hidden');
-      } else {
-        regTab.className = "flex-1 py-3 text-white border-b-2 border-white";
-        loginTab.className = "flex-1 py-3 text-zinc-500 hover:text-white border-b-2 border-transparent";
-        regForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-      }
-    }
-
-    function handleAvatarFileSelect(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          tempUploadedAvatarBase64 = e.target.result;
-          document.getElementById('reg-avatar-label').innerText = `선택됨: ${file.name}`;
-        };
-        reader.readAsDataURL(file);
-      }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
     }
 
     function handleRegister(e) {
@@ -615,32 +264,15 @@
       const name = document.getElementById('reg-name').value.trim();
       const password = document.getElementById('reg-password').value;
       const bio = document.getElementById('reg-bio').value.trim();
-      
-      if (artists.find(a => a.name.toLowerCase() === name.toLowerCase())) {
-        showToast('이미 등록된 작가명입니다.', 'error');
-        return;
-      }
 
-      const avatar = tempUploadedAvatarBase64 || generatePlaceholderSVG(name.toUpperCase(), "DAEHEUNG ARTIST");
-
-      const newArtist = {
-        id: `artist_${Date.now()}`,
-        name,
-        password,
-        bio: bio || '대흥동 기반 작가 소개가 입력되지 않았습니다.',
-        avatar,
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-
-      artists.push(newArtist);
-      currentUser = newArtist;
-      saveData();
-      renderAuthWidget();
-      closeModal('auth-modal');
-      showToast(`[REGISTERED] ${newArtist.name} 작가님 등록 완료`);
-      
-      tempUploadedAvatarBase64 = null;
-      document.getElementById('form-register').reset();
+      const artistData = { name, password, bio, createdAt: new Date().toISOString() };
+      db.collection("artists").add(artistData).then(docRef => {
+        currentUser = { id: docRef.id, ...artistData };
+        localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
+        renderAuthWidget();
+        closeModal('auth-modal');
+        alert("작가 등록 및 로그인 성공!");
+      });
     }
 
     function handleLogin(e) {
@@ -648,450 +280,86 @@
       const name = document.getElementById('login-name').value.trim();
       const password = document.getElementById('login-password').value;
 
-      const artist = artists.find(a => a.name === name && a.password === password);
-
-      if (artist) {
-        currentUser = artist;
-        saveData();
-        renderAuthWidget();
-        closeModal('auth-modal');
-        showToast(`[LOGIN SUCCESS] ${artist.name}`);
-        document.getElementById('form-login').reset();
-      } else {
-        showToast('작가명 또는 비밀번호가 일치하지 않습니다.', 'error');
-      }
+      db.collection("artists").where("name", "==", name).where("password", "==", password).get()
+        .then(snapshot => {
+          if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            currentUser = { id: doc.id, ...doc.data() };
+            localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
+            renderAuthWidget();
+            closeModal('auth-modal');
+            alert("로그인 완료!");
+          } else {
+            alert("작가명 또는 비밀번호가 틀립니다.");
+          }
+        });
     }
-
-    function handleLogout() {
-      currentUser = null;
-      saveData();
-      renderAuthWidget();
-      showToast('로그아웃 되었습니다.');
-      showSection('gallery');
-    }
-
-    function handleRegisterArtBtnClick() {
-      if (!currentUser) {
-        showToast('작품을 등록하려면 먼저 작가로 로그인하거나 등록하세요.', 'info');
-        openAuthModal('login');
-      } else {
-        openArtworkModal();
-      }
-    }
-
-    /* ==========================================================================
-       4. LOCAL FILE IMAGE PROCESSING & ARTWORK CREATION
-       ========================================================================== */
 
     function openArtworkModal() {
-      if (!currentUser) {
-        showToast('로그인이 필요합니다.');
-        openAuthModal('login');
-        return;
-      }
       document.getElementById('artwork-modal').classList.remove('hidden');
-    }
-
-    function handleArtFileSelect(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          tempUploadedArtBase64 = e.target.result;
-          
-          const box = document.getElementById('art-file-preview-box');
-          box.innerHTML = `
-            <img src="${tempUploadedArtBase64}" class="h-32 object-contain border border-white my-2">
-            <span class="font-mono text-xs text-white font-bold">${file.name}</span>
-            <span class="text-[10px] text-zinc-400 font-mono">${(file.size / 1024).toFixed(1)} KB (파일 교체하려면 클릭)</span>
-          `;
-        };
-        reader.readAsDataURL(file);
-      }
     }
 
     function handleCreateArtwork(e) {
       e.preventDefault();
       if (!currentUser) return;
-      if (!tempUploadedArtBase64) {
-        showToast('PC에서 올릴 이미지 파일을 선택해주세요.', 'error');
-        return;
-      }
 
       const title = document.getElementById('art-title').value.trim();
       const category = document.getElementById('art-category').value;
-      const year = document.getElementById('art-year').value;
-      const description = document.getElementById('art-desc').value.trim();
+      const desc = document.getElementById('art-desc').value.trim();
+      const file = document.getElementById('art-file').files[0];
 
-      const newArt = {
-        id: `art_${Date.now()}`,
-        artistId: currentUser.id,
-        artistName: currentUser.name,
-        title,
-        category,
-        year: parseInt(year) || 2026,
-        image: tempUploadedArtBase64,
-        description: description || '작품 설명이 입력되지 않았습니다.',
-        createdAt: new Date().toISOString().split('T')[0]
-      };
+      if (!file) return;
 
-      artworks.unshift(newArt);
-      saveData();
-      closeModal('artwork-modal');
-
-      showToast(`'${newArt.title}' 작품 등록 완료!`);
-
-      tempUploadedArtBase64 = null;
-      document.getElementById('art-file-preview-box').innerHTML = `
-        <i class="fa-solid fa-file-arrow-up text-2xl text-zinc-400"></i>
-        <span class="font-mono text-xs text-zinc-300 font-bold">내 PC에서 이미지 파일 선택</span>
-        <span class="text-[10px] text-zinc-500 font-mono">PNG, JPG, WEBP 지원</span>
-      `;
-
-      renderGallery();
-      openQRModal(newArt.id);
-    }
-
-    /* ==========================================================================
-       5. GALLERY & ARTIST RENDERERS
-       ========================================================================== */
-
-    function renderGallery() {
-      const grid = document.getElementById('artwork-grid');
-      const searchVal = document.getElementById('search-input').value.toLowerCase();
-
-      let filtered = artworks.filter(art => {
-        const matchesCategory = (activeFilterCategory === 'All') || (art.category === activeFilterCategory);
-        const matchesSearch = art.title.toLowerCase().includes(searchVal) || art.artistName.toLowerCase().includes(searchVal);
-        return matchesCategory && matchesSearch;
+      const storageRef = storage.ref(`artworks/${Date.now()}_${file.name}`);
+      storageRef.put(file).then(snapshot => {
+        return snapshot.ref.getDownloadURL();
+      }).then(downloadURL => {
+        return db.collection("artworks").add({
+          title,
+          category,
+          desc,
+          imageUrl: downloadURL,
+          artistId: currentUser.id,
+          artistName: currentUser.name,
+          createdAt: new Date().toISOString()
+        });
+      }).then(() => {
+        closeModal('artwork-modal');
+        alert("작품 등록 완료! 다른 기기에서도 실시간으로 동기화됩니다.");
+        loadArtworksFromFirebase();
       });
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-20 text-center border border-dashed border-zinc-800 text-zinc-600 font-mono">
-            <i class="fa-solid fa-square-xmark text-3xl mb-2 block"></i>
-            [ NO ARTWORKS FOUND ]
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = filtered.map(art => `
-        <div class="border-2 border-white bg-black flex flex-col justify-between group cursor-pointer shadow-sharp-gray hover:shadow-sharp-white transition-all" onclick="openArtworkDetail('${art.id}')">
-          <!-- Image Box -->
-          <div class="relative aspect-square bg-zinc-950 border-b-2 border-white overflow-hidden flex items-center justify-center p-2">
-            <img src="${art.image}" alt="${art.title}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
-            <div class="absolute top-2 left-2">
-              <span class="px-2 py-0.5 bg-black text-white border border-white font-mono text-[10px] font-bold">
-                ${art.category}
-              </span>
-            </div>
-            <button onclick="event.stopPropagation(); openQRModal('${art.id}')" title="QR CODE" class="absolute bottom-2 right-2 w-8 h-8 bg-black text-white border border-white flex items-center justify-center hover:bg-white hover:text-black transition-colors">
-              <i class="fa-solid fa-qrcode text-xs"></i>
-            </button>
-          </div>
-
-          <!-- Meta -->
-          <div class="p-4 flex-1 flex flex-col justify-between">
-            <div>
-              <h4 class="font-display font-extrabold text-white text-base tracking-tight uppercase line-clamp-1 group-hover:text-zinc-300">${art.title}</h4>
-              <p class="font-mono text-xs text-zinc-400 mt-1 flex justify-between">
-                <span>BY ${art.artistName}</span>
-                <span class="text-zinc-500">${art.year}</span>
-              </p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between font-mono text-[10px] text-zinc-400">
-              <span class="text-white font-bold">[ VIEW & QR ]</span>
-              <span>${art.createdAt}</span>
-            </div>
-          </div>
-        </div>
-      `).join('');
     }
 
-    function filterGallery(category) {
-      activeFilterCategory = category;
-      const btns = document.querySelectorAll('.cat-btn');
-      btns.forEach(btn => {
-        if (btn.innerText.includes(category)) {
-          btn.className = "cat-btn active px-3 py-1.5 bg-white text-black font-bold uppercase border border-white";
-        } else {
-          btn.className = "cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors";
-        }
+    function loadArtworksFromFirebase() {
+      db.collection("artworks").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+        const grid = document.getElementById('artwork-grid');
+        grid.innerHTML = snapshot.docs.map(doc => {
+          const art = doc.data();
+          return `
+            <div class="border-2 border-white bg-black p-3 shadow-sharp-gray">
+              <img src="${art.imageUrl}" class="w-full aspect-square object-cover mb-2 border border-white">
+              <span class="font-mono text-[10px] bg-white text-black font-bold px-1">${art.category}</span>
+              <h4 class="font-bold uppercase mt-1">${art.title}</h4>
+              <p class="font-mono text-xs text-zinc-400">BY ${art.artistName}</p>
+            </div>
+          `;
+        }).join('');
       });
-      renderGallery();
     }
 
-    function searchGallery() {
-      renderGallery();
-    }
-
-    function renderArtistsList() {
-      const grid = document.getElementById('artists-grid');
-      
-      grid.innerHTML = artists.map(artist => {
-        const artistArtworks = artworks.filter(a => a.artistId === artist.id);
-        return `
-          <div class="border-2 border-white bg-black p-6 flex flex-col justify-between shadow-sharp-gray hover:shadow-sharp-white transition-all">
-            <div>
-              <div class="flex items-center gap-4 mb-4 pb-4 border-b border-zinc-800">
-                <img src="${artist.avatar}" class="w-14 h-14 object-cover border-2 border-white">
-                <div>
-                  <h3 class="font-display font-bold text-lg text-white uppercase">${artist.name}</h3>
-                  <span class="font-mono text-xs text-zinc-400">[ WORKS: ${artistArtworks.length} ]</span>
-                </div>
-              </div>
-              <p class="text-xs text-zinc-400 line-clamp-3 leading-relaxed mb-6">${artist.bio}</p>
+    function loadArtistsFromFirebase() {
+      db.collection("artists").get().then(snapshot => {
+        const grid = document.getElementById('artists-grid');
+        grid.innerHTML = snapshot.docs.map(doc => {
+          const a = doc.data();
+          return `
+            <div class="border-2 border-white bg-black p-6">
+              <h3 class="font-bold text-lg">${a.name}</h3>
+              <p class="text-xs text-zinc-400 mt-2">${a.bio}</p>
             </div>
-
-            <button onclick="showSection('artist-profile', '${artist.id}')" class="btn-sharp w-full py-2.5 text-xs flex items-center justify-center gap-2">
-              <i class="fa-solid fa-user"></i> 작가 프로필 & 포트폴리오 &rarr;
-            </button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderArtistProfilePage(artistId) {
-      const artist = artists.find(a => a.id === artistId);
-      if (!artist) return;
-
-      const artistArtworks = artworks.filter(a => a.artistId === artist.id);
-
-      const headerBox = document.getElementById('artist-profile-header');
-      headerBox.innerHTML = `
-        <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
-          <img src="${artist.avatar}" class="w-28 h-28 object-cover border-2 border-white">
-          <div class="flex-1 space-y-3 text-center md:text-left">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-              <div>
-                <h2 class="font-display text-3xl font-black uppercase text-white tracking-tight">${artist.name}</h2>
-                <span class="font-mono text-xs text-zinc-500 uppercase">[ REGISTERED DAEHEUNG ARTIST ]</span>
-              </div>
-              ${currentUser && currentUser.id === artist.id ? `
-                <button onclick="openArtworkModal()" class="btn-sharp px-4 py-2 text-xs">
-                  + 새 작품 업로드
-                </button>
-              ` : ''}
-            </div>
-            <p class="text-xs md:text-sm text-zinc-300 leading-relaxed max-w-3xl">${artist.bio}</p>
-            <div class="pt-2 font-mono text-xs text-zinc-500 flex justify-center md:justify-start gap-4">
-              <span>TOTAL: ${artistArtworks.length} WORKS</span>
-              <span>SINCE: ${artist.createdAt}</span>
-            </div>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('artist-art-count').innerText = `TOTAL ${artistArtworks.length} WORKS`;
-      const grid = document.getElementById('artist-artworks-grid');
-
-      if (artistArtworks.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-zinc-600 font-mono">
-            [ NO REGISTERED WORKS YET ]
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = artistArtworks.map(art => `
-        <div class="border border-white/40 hover:border-white bg-black p-3 flex flex-col justify-between group cursor-pointer" onclick="openArtworkDetail('${art.id}')">
-          <div class="aspect-square bg-zinc-950 border border-zinc-800 overflow-hidden mb-3 relative flex items-center justify-center">
-            <img src="${art.image}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
-            <button onclick="event.stopPropagation(); openQRModal('${art.id}')" class="absolute bottom-2 right-2 w-7 h-7 bg-black text-white border border-white flex items-center justify-center">
-              <i class="fa-solid fa-qrcode text-xs"></i>
-            </button>
-          </div>
-          <div>
-            <h4 class="font-display font-bold text-white text-sm uppercase line-clamp-1">${art.title}</h4>
-            <div class="flex justify-between font-mono text-[10px] text-zinc-400 mt-1">
-              <span>${art.category}</span>
-              <span>${art.year}</span>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    /* ==========================================================================
-       6. DETAIL & QR MODAL LOGIC
-       ========================================================================== */
-
-    function openArtworkDetail(artId) {
-      const art = artworks.find(a => a.id === artId);
-      if (!art) return;
-
-      const modalBody = document.getElementById('detail-modal-body');
-      const artDeepLink = `${window.location.origin}${window.location.pathname}#${art.id}`;
-
-      modalBody.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="border-2 border-white bg-zinc-950 p-2 flex items-center justify-center">
-            <img src="${art.image}" class="max-h-[400px] w-full object-contain">
-          </div>
-
-          <div class="flex flex-col justify-between space-y-6">
-            <div>
-              <div class="flex items-center gap-2 mb-2">
-                <span class="px-2 py-0.5 bg-white text-black font-mono text-[10px] font-bold uppercase">${art.category}</span>
-                <span class="font-mono text-xs text-zinc-500">${art.year}</span>
-              </div>
-              <h2 class="font-display text-3xl font-black uppercase text-white mb-2 leading-none">${art.title}</h2>
-              <button onclick="closeModal('detail-modal'); showSection('artist-profile', '${art.artistId}')" class="font-mono text-xs text-zinc-400 hover:text-white uppercase font-bold block mb-4">
-                BY ${art.artistName} &rarr;
-              </button>
-              
-              <div class="border border-zinc-800 p-4 bg-zinc-950 text-xs text-zinc-300 leading-relaxed font-sans mb-6">
-                ${art.description}
-              </div>
-            </div>
-
-            <!-- QR Card -->
-            <div class="border-2 border-white p-4 bg-black flex items-center gap-4">
-              <div id="detail-qr-box" class="p-2 bg-white border border-white flex-shrink-0"></div>
-              <div>
-                <span class="font-mono text-[10px] font-bold text-white uppercase block mb-1">[ EXHIBITION QR LINK ]</span>
-                <p class="font-mono text-[11px] text-zinc-400 leading-tight">스마트폰 스캔 시 본 작품 아카이브로 연결되는 고유 QR 코드입니다.</p>
-                <button onclick="openQRModal('${art.id}')" class="font-mono text-xs text-white underline font-bold mt-2 block">
-                  QR 라벨 크게보기 / 인쇄 &rarr;
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      document.getElementById('detail-modal').classList.remove('hidden');
-
-      setTimeout(() => {
-        const qrContainer = document.getElementById('detail-qr-box');
-        if (qrContainer) {
-          qrContainer.innerHTML = '';
-          new QRCode(qrContainer, {
-            text: artDeepLink,
-            width: 80,
-            height: 80,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-          });
-        }
-      }, 50);
-    }
-
-    function openQRModal(artId) {
-      const art = artworks.find(a => a.id === artId);
-      if (!art) return;
-
-      activeQRDetailArt = art;
-      document.getElementById('qr-modal-title').innerText = art.title;
-      document.getElementById('qr-modal-artist').innerText = `BY ${art.artistName} (${art.category}, ${art.year})`;
-
-      const qrBox = document.getElementById('qr-code-box');
-      qrBox.innerHTML = '';
-
-      const artDeepLink = `${window.location.origin}${window.location.pathname}#${art.id}`;
-
-      new QRCode(qrBox, {
-        text: artDeepLink,
-        width: 180,
-        height: 180,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
+          `;
+        }).join('');
       });
-
-      document.getElementById('qr-modal').classList.remove('hidden');
-    }
-
-    function copyQRLink() {
-      if (!activeQRDetailArt) return;
-      const link = `${window.location.origin}${window.location.pathname}#${activeQRDetailArt.id}`;
-      
-      const tempInput = document.createElement('input');
-      tempInput.value = link;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempInput);
-
-      showToast('[COPIED] QR 링크가 복사되었습니다.');
-    }
-
-    function printQRLabel() {
-      if (!activeQRDetailArt) return;
-      
-      const printWindow = window.open('', '_blank');
-      const artDeepLink = `${window.location.origin}${window.location.pathname}#${activeQRDetailArt.id}`;
-
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Placard Label - ${activeQRDetailArt.title}</title>
-          <style>
-            body { font-family: 'Space Grotesk', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #fff; color: #000; }
-            .label-card { border: 3px solid #000; padding: 28px; text-align: center; max-width: 300px; }
-            .title { font-size: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
-            .artist { font-family: monospace; font-size: 12px; font-weight: bold; margin-bottom: 16px; }
-            .qr-box { display: inline-block; padding: 8px; border: 2px solid #000; margin-bottom: 12px; }
-            .footer { font-family: monospace; font-size: 10px; font-weight: bold; }
-          </style>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
-        </head>
-        <body>
-          <div class="label-card">
-            <div class="title">${activeQRDetailArt.title}</div>
-            <div class="artist">BY ${activeQRDetailArt.artistName} (${activeQRDetailArt.year})</div>
-            <div id="print-qr" class="qr-box"></div>
-            <div class="footer">대흥동 예술가 아카이빙</div>
-          </div>
-          <script>
-            new QRCode(document.getElementById('print-qr'), {
-              text: "${artDeepLink}",
-              width: 160,
-              height: 160,
-              colorDark: "#000000",
-              colorLight: "#ffffff"
-            });
-            setTimeout(() => { window.print(); window.close(); }, 500);
-          <\/script>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
-
-    /* ==========================================================================
-       7. TOAST & MODAL HELPERS
-       ========================================================================== */
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.add('hidden');
-    }
-
-    function showToast(message, type = 'success') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-
-      toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 bg-black border-2 border-white font-mono text-xs text-white shadow-sharp-white transition-all transform translate-y-2 opacity-0`;
-      toast.innerHTML = `
-        <i class="fa-solid fa-square text-white text-xs"></i>
-        <span>${message}</span>
-      `;
-
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      }, 10);
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
     }
   </script>
 </body>
