@@ -187,7 +187,7 @@
           <option value="INSTALLATION">INSTALLATION (설치)</option>
         </select>
         <div>
-          <label class="block font-mono text-[10px] text-zinc-400 uppercase mb-1">이미지 업로드 (여러 개 선택 가능)</label>
+          <label class="block font-mono text-[10px] text-zinc-400 uppercase mb-1">이미지 업로드 (Shift/Ctrl 클릭으로 여러 장 다중 선택 가능)</label>
           <input type="file" id="art-files" accept="image/*" multiple required class="w-full bg-black border border-zinc-700 p-2 text-xs text-white">
         </div>
         <textarea id="art-desc" rows="3" placeholder="작품 설명..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
@@ -202,16 +202,24 @@
       <button onclick="closeModal('detail-modal')" class="absolute top-4 right-4 text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
       
       <div class="flex flex-col md:flex-row gap-6">
-        <!-- Main Image & Thumbnails -->
+        <!-- Main Image & Multi-Image Controls -->
         <div class="w-full md:w-1/2 flex flex-col gap-2">
-          <img id="detail-img" src="" class="w-full aspect-square object-cover border-2 border-white">
+          <div class="relative">
+            <img id="detail-img" src="" class="w-full aspect-square object-cover border-2 border-white">
+            <span id="detail-img-count" class="absolute bottom-2 right-2 bg-black/80 text-white font-mono text-[10px] px-2 py-0.5 border border-zinc-700">1/1</span>
+          </div>
           <div id="detail-thumbnails" class="flex gap-2 overflow-x-auto py-1"></div>
         </div>
         
-        <!-- Info & QR -->
+        <!-- Info, Delete Button & QR -->
         <div class="w-full md:w-1/2 flex flex-col justify-between space-y-4">
           <div>
-            <span id="detail-category" class="font-mono text-xs bg-white text-black font-bold px-2 py-0.5">CATEGORY</span>
+            <div class="flex items-center justify-between">
+              <span id="detail-category" class="font-mono text-xs bg-white text-black font-bold px-2 py-0.5">CATEGORY</span>
+              <button id="delete-art-btn" onclick="handleDeleteArtwork()" class="hidden border border-red-600 bg-red-950/80 hover:bg-red-600 text-white font-bold text-[11px] px-2.5 py-1 transition-colors">
+                <i class="fa-solid fa-trash-can mr-1"></i> [ DELETE WORK ]
+              </button>
+            </div>
             <h3 id="detail-title" class="font-display text-2xl font-black uppercase mt-2">WORK TITLE</h3>
             <p id="detail-artist" class="font-mono text-xs text-zinc-400 mt-1">BY ARTIST</p>
             <p id="detail-desc" class="text-xs text-zinc-300 mt-4 leading-relaxed whitespace-pre-line"></p>
@@ -233,6 +241,7 @@
   <script>
     let currentUser = JSON.parse(localStorage.getItem('daeheung_user')) || null;
     let allArtworks = [];
+    let currentDetailArtId = null;
 
     window.onload = function() {
       renderAuthWidget();
@@ -265,7 +274,7 @@
       currentUser = null;
       localStorage.removeItem('daeheung_user');
       renderAuthWidget();
-      alert("로그아웃되었습니다.");
+      alert("로그인 해제되었습니다.");
     }
 
     function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
@@ -333,7 +342,7 @@
 
     function openArtworkModal() { document.getElementById('artwork-modal').classList.remove('hidden'); }
 
-    // 고화질 이미지 압축 및 변환 함수 (최대 1200px)
+    // 이미지 다중 압축 함수
     function resizeImage(file, maxWidth, maxHeight, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -352,49 +361,50 @@
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          callback(canvas.toDataURL('image/jpeg', 0.82)); // 선명도를 위한 82% 고화질
+          callback(canvas.toDataURL('image/jpeg', 0.75));
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
 
+    // 다중 이미지 업로드
     function handleCreateArtwork(e) {
       e.preventDefault();
       if (!currentUser) return;
 
       const btn = document.getElementById('submit-art-btn');
-      btn.innerText = "업로드 중...";
+      btn.innerText = "업로드 처리 중...";
       btn.disabled = true;
 
       const title = document.getElementById('art-title').value.trim();
       const category = document.getElementById('art-category').value;
       const desc = document.getElementById('art-desc').value.trim();
-      const files = document.getElementById('art-files').files;
+      const fileInput = document.getElementById('art-files');
+      const files = Array.from(fileInput.files);
 
-      if (!files || files.length === 0) {
-        alert("최소 1개의 이미지를 선택해주세요.");
+      if (files.length === 0) {
+        alert("이미지를 한 개 이상 선택해 주세요.");
         btn.innerText = "작품 등록 (실시간 공유) →";
         btn.disabled = false;
         return;
       }
 
-      // 다중 이미지 동시 변환
-      let imageBase64List = [];
-      let loadedCount = 0;
+      let resizedImages = [];
+      let completedCount = 0;
 
-      for (let i = 0; i < files.length; i++) {
-        resizeImage(files[i], 1200, 1200, function(resizedBase64) {
-          imageBase64List[i] = resizedBase64;
-          loadedCount++;
+      files.forEach((file, index) => {
+        resizeImage(file, 800, 800, function(base64) {
+          resizedImages[index] = base64;
+          completedCount++;
 
-          if (loadedCount === files.length) {
+          if (completedCount === files.length) {
             db.collection("artworks").add({
               title,
               category,
               desc,
-              imageUrl: imageBase64List[0], // 대표 이미지
-              images: imageBase64List,       // 전체 이미지 리스트
+              imageUrl: resizedImages[0],
+              images: resizedImages,
               artistId: currentUser.id,
               artistName: currentUser.name,
               createdAt: new Date().toISOString()
@@ -402,7 +412,7 @@
               btn.innerText = "작품 등록 (실시간 공유) →";
               btn.disabled = false;
               closeModal('artwork-modal');
-              alert("작품 등록 성공! 고화질 이미지들이 실시간 저장되었습니다.");
+              alert(`작품 등록 완! 총 ${resizedImages.length}장의 사진이 동기화되었습니다.`);
             }).catch(err => {
               btn.innerText = "작품 등록 (실시간 공유) →";
               btn.disabled = false;
@@ -410,7 +420,7 @@
             });
           }
         });
-      }
+      });
     }
 
     function loadArtworksFromFirebase() {
@@ -418,7 +428,7 @@
         allArtworks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderGalleryGrid(allArtworks);
 
-        // QR 코드를 스캔하고 진입 시 자동으로 해당 작품 팝업 오픈
+        // QR 코드로 진입 시 자동 팝업 열기
         const urlParams = new URLSearchParams(window.location.search);
         const targetArtId = urlParams.get('artId');
         if (targetArtId) {
@@ -434,30 +444,37 @@
 
     function renderGalleryGrid(items) {
       const grid = document.getElementById('artwork-grid');
-      grid.innerHTML = items.map(art => `
-        <div onclick="openDetailModal('${art.id}')" class="border-2 border-white bg-black p-3 shadow-sharp-gray card-hover">
-          <img src="${art.imageUrl}" class="w-full aspect-square object-cover mb-2 border border-white">
-          <span class="font-mono text-[10px] bg-white text-black font-bold px-1">${art.category}</span>
-          <h4 class="font-bold uppercase mt-1 text-sm">${art.title}</h4>
-          <p class="font-mono text-xs text-zinc-400">BY ${art.artistName}</p>
-        </div>
-      `).join('');
+      grid.innerHTML = items.map(art => {
+        const imgCount = art.images ? art.images.length : 1;
+        return `
+          <div onclick="openDetailModal('${art.id}')" class="border-2 border-white bg-black p-3 shadow-sharp-gray card-hover relative">
+            <img src="${art.imageUrl}" class="w-full aspect-square object-cover mb-2 border border-white">
+            ${imgCount > 1 ? `<span class="absolute top-5 right-5 bg-black/90 border border-white font-mono text-[9px] px-1.5 py-0.5 text-white font-bold"><i class="fa-solid fa-layer-group mr-1"></i>${imgCount}</span>` : ''}
+            <span class="font-mono text-[10px] bg-white text-black font-bold px-1">${art.category}</span>
+            <h4 class="font-bold uppercase mt-1 text-sm">${art.title}</h4>
+            <p class="font-mono text-xs text-zinc-400">BY ${art.artistName}</p>
+          </div>
+        `;
+      }).join('');
     }
 
     function openDetailModal(artId) {
       const art = allArtworks.find(a => a.id === artId);
       if (!art) return;
 
-      const images = art.images && art.images.length > 0 ? art.images : [art.imageUrl];
+      currentDetailArtId = artId;
+
+      const images = (art.images && art.images.length > 0) ? art.images : [art.imageUrl];
 
       const mainImg = document.getElementById('detail-img');
+      const countLabel = document.getElementById('detail-img-count');
       mainImg.src = images[0];
+      countLabel.innerText = `1 / ${images.length}`;
 
-      // 썸네일 영역 처리
       const thumbContainer = document.getElementById('detail-thumbnails');
       if (images.length > 1) {
         thumbContainer.innerHTML = images.map((img, idx) => `
-          <img src="${img}" onclick="setMainImage('${img}')" class="w-12 h-12 object-cover border border-zinc-700 cursor-pointer hover:border-white">
+          <img src="${img}" onclick="setMainImage('${img}', ${idx + 1}, ${images.length})" class="w-12 h-12 object-cover border border-zinc-700 hover:border-white cursor-pointer">
         `).join('');
         thumbContainer.classList.remove('hidden');
       } else {
@@ -468,9 +485,17 @@
       document.getElementById('detail-category').innerText = art.category;
       document.getElementById('detail-title').innerText = art.title;
       document.getElementById('detail-artist').innerText = `BY ${art.artistName}`;
-      document.getElementById('detail-desc').innerText = art.desc || "설명이 없습니다.";
+      document.getElementById('detail-desc').innerText = art.desc || "등록된 설명이 없습니다.";
 
-      // QR 코드 생성 (스캔 시 해당 작품 ID 주소로 Direct 진입)
+      // 삭제 버튼 보임 여부 판단 (작품 작성자 본인 확인)
+      const deleteBtn = document.getElementById('delete-art-btn');
+      if (currentUser && (currentUser.id === art.artistId || currentUser.name === art.artistName)) {
+        deleteBtn.classList.remove('hidden');
+      } else {
+        deleteBtn.classList.add('hidden');
+      }
+
+      // QR 코드 생성
       const qrContainer = document.getElementById('qrcode');
       qrContainer.innerHTML = "";
       
@@ -488,8 +513,21 @@
       document.getElementById('detail-modal').classList.remove('hidden');
     }
 
-    function setMainImage(src) {
+    function setMainImage(src, current, total) {
       document.getElementById('detail-img').src = src;
+      document.getElementById('detail-img-count').innerText = `${current} / ${total}`;
+    }
+
+    // 작품 삭제 함수
+    function handleDeleteArtwork() {
+      if (!currentDetailArtId) return;
+
+      if (confirm("정말로 이 작품을 삭제하시겠습니까? 삭제된 작품은 복구할 수 없습니다.")) {
+        db.collection("artworks").doc(currentDetailArtId).delete().then(() => {
+          closeModal('detail-modal');
+          alert("작품이 정상적으로 삭제되었습니다.");
+        }).catch(err => alert("삭제 실패: " + err.message));
+      }
     }
 
     function loadArtistsFromFirebase() {
