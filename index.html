@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MONO ARTIST ARCHIVE : Sharp B&W Platform</title>
+  <title>대흥동 예술가 아카이빙 : DAEHEUNG ARTIST ARCHIVE</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
+  <!-- FontAwesome Icons CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- QRCode.js Library -->
+  <!-- QRCode.js Library CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- Google Fonts: Space Grotesk, Syne & Noto Sans KR -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,15 +66,6 @@
       background: #cccccc;
     }
 
-    /* Custom Invert Hover Animation */
-    .hover-invert {
-      transition: all 0.15s ease-in-out;
-    }
-    .hover-invert:hover {
-      background-color: #ffffff !important;
-      color: #000000 !important;
-    }
-
     .btn-sharp {
       border: 1px solid #ffffff;
       background: #000000;
@@ -96,23 +87,6 @@
       box-shadow: 1px 1px 0px 0px #ffffff;
     }
 
-    .btn-sharp-black {
-      border: 1px solid #000000;
-      background: #ffffff;
-      color: #000000;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      transition: all 0.15s ease;
-      box-shadow: 3px 3px 0px 0px #000000;
-    }
-    .btn-sharp-black:hover {
-      background: #000000;
-      color: #ffffff;
-      transform: translate(-1px, -1px);
-      box-shadow: 5px 5px 0px 0px #000000;
-    }
-
     .file-drop-area {
       border: 2px dashed #404040;
       transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -132,11 +106,11 @@
       <!-- Brand Logo -->
       <a href="#" onclick="showSection('gallery')" class="flex items-center gap-3 group">
         <div class="w-10 h-10 bg-white text-black font-display font-black text-2xl flex items-center justify-center border border-white group-hover:bg-black group-hover:text-white transition-colors">
-          M
+          大
         </div>
         <div>
-          <span class="font-display font-extrabold text-xl tracking-tighter uppercase block leading-none">MONO // ARCHIVE</span>
-          <span class="font-mono text-[10px] text-zinc-400 tracking-widest uppercase block mt-1">ARTIST & QR PORTFOLIO</span>
+          <span class="font-display font-extrabold text-xl tracking-tighter uppercase block leading-none">대흥동 예술가 아카이빙</span>
+          <span class="font-mono text-[10px] text-zinc-400 tracking-widest uppercase block mt-1">DAEHEUNG ARTIST ARCHIVE</span>
         </div>
       </a>
 
@@ -173,20 +147,20 @@
         </div>
         <div class="max-w-2xl relative z-10">
           <div class="inline-block px-3 py-1 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-widest mb-4">
-            [ LOCAL PC UPLOAD & PHYSICAL QR LINKING ]
+            [ 대흥동 예술가 & 작품 온라인 아카이빙 플랫폼 ]
           </div>
-          <h1 class="font-display text-4xl md:text-6xl font-extrabold uppercase tracking-tight leading-none mb-4">
-            SHARP ART.<br>INSTANT QR.
+          <h1 class="font-display text-3xl md:text-5xl font-extrabold uppercase tracking-tight leading-tight mb-4">
+            대흥동 예술가 아카이빙<br><span class="text-zinc-400 font-mono text-xl md:text-2xl">ARTIST & ARCHITECTURE PORTFOLIO</span>
           </h1>
           <p class="text-zinc-400 text-sm md:text-base font-normal leading-relaxed mb-6">
-            내 PC의 작품 이미지를 수초 만에 등록하세요. 오프라인 전시회 캡션 카드나 리플렛에 적용할 수 있는 **고화질 QR 코드**가 즉시 생성됩니다.
+            대흥동 지역 작가들의 회화, 조각, 건축, 디지털 작품을 기록합니다. 작품을 올리면 오프라인 전시에 활용 가능한 **고화질 QR 코드**가 자동 생성됩니다.
           </p>
           <div class="flex flex-wrap gap-4">
             <button onclick="handleRegisterArtBtnClick()" class="btn-sharp px-6 py-3 text-xs flex items-center gap-2">
               <i class="fa-solid fa-plus"></i> 내 PC에서 작품 등록
             </button>
             <button onclick="showSection('artists')" class="px-6 py-3 border border-zinc-700 bg-zinc-900 hover:bg-white hover:text-black text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2">
-              <i class="fa-solid fa-address-book"></i> 작가 목록 둘러보기
+              <i class="fa-solid fa-address-book"></i> 대흥동 작가진 둘러보기
             </button>
           </div>
         </div>
@@ -195,16 +169,18 @@
       <!-- Category Filter Bar & Search -->
       <div class="border border-white/20 p-4 bg-zinc-950 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
         <div id="category-filters" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 font-mono text-xs">
-          <button onclick="filterGallery('All')" class="cat-btn active px-3 py-1.5 bg-white text-black font-bold uppercase border border-white">ALL [ALL]</button>
-          <button onclick="filterGallery('PAINTING')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">PAINTING</button>
-          <button onclick="filterGallery('SCULPTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">SCULPTURE</button>
-          <button onclick="filterGallery('DIGITAL')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">DIGITAL</button>
-          <button onclick="filterGallery('PHOTOGRAPHY')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">PHOTOGRAPHY</button>
+          <button onclick="filterGallery('All')" class="cat-btn active px-3 py-1.5 bg-white text-black font-bold uppercase border border-white">ALL [전체]</button>
+          <button onclick="filterGallery('PAINTING')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">PAINTING (회화)</button>
+          <button onclick="filterGallery('ARCHITECTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">ARCHITECTURE (건축)</button>
+          <button onclick="filterGallery('SCULPTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">SCULPTURE (조형)</button>
+          <button onclick="filterGallery('INSTALLATION')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">INSTALLATION (설치)</button>
+          <button onclick="filterGallery('DIGITAL')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">DIGITAL (디지털)</button>
+          <button onclick="filterGallery('PHOTOGRAPHY')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800 hover:border-white hover:text-white transition-colors">PHOTOGRAPHY (사진)</button>
         </div>
 
         <div class="relative w-full md:w-72">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-          <input type="text" id="search-input" oninput="searchGallery()" placeholder="SEARCH TITLE / ARTIST..." class="w-full bg-black border border-zinc-700 focus:border-white pl-9 pr-4 py-2 text-xs text-white uppercase placeholder:text-zinc-600 focus:outline-none">
+          <input type="text" id="search-input" oninput="searchGallery()" placeholder="작품명 / 작가명 검색..." class="w-full bg-black border border-zinc-700 focus:border-white pl-9 pr-4 py-2 text-xs text-white uppercase placeholder:text-zinc-600 focus:outline-none">
         </div>
       </div>
 
@@ -218,8 +194,8 @@
     <section id="section-artists" class="hidden space-y-6">
       <div class="border-b-2 border-white pb-4 flex justify-between items-end">
         <div>
-          <h2 class="font-display text-3xl font-extrabold uppercase tracking-tight">REGISTERED ARTISTS</h2>
-          <p class="text-zinc-400 text-xs font-mono mt-1">플랫폼에 등록된 작가 포트폴리오 디렉토리입니다.</p>
+          <h2 class="font-display text-3xl font-extrabold uppercase tracking-tight">대흥동 참여 작가</h2>
+          <p class="text-zinc-400 text-xs font-mono mt-1">대흥동 아카이빙 플랫폼에 등록된 작가 디렉토리입니다.</p>
         </div>
         <button onclick="openAuthModal('register')" class="btn-sharp px-4 py-2 text-xs">
           + 작가 등록
@@ -265,10 +241,10 @@
       <!-- Tabs -->
       <div class="flex border-b-2 border-zinc-800 mb-6 font-mono text-xs font-bold uppercase">
         <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-3 text-white border-b-2 border-white">
-          [ LOGIN ]
+          [ 로그인 ]
         </button>
         <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-3 text-zinc-500 hover:text-white border-b-2 border-transparent">
-          [ REGISTER ARTIST ]
+          [ 작가 등록 ]
         </button>
       </div>
 
@@ -276,7 +252,7 @@
       <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">ARTIST NAME / ID *</label>
-          <input type="text" id="login-name" required placeholder="작가명을 입력하세요" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
+          <input type="text" id="login-name" required placeholder="등록된 작가명을 입력하세요" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
         </div>
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">PASSWORD *</label>
@@ -291,7 +267,7 @@
       <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">ARTIST NAME *</label>
-          <input type="text" id="reg-name" required placeholder="예: 김아뜰리에" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
+          <input type="text" id="reg-name" required placeholder="예: 김대흥" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
         </div>
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">PASSWORD *</label>
@@ -299,7 +275,7 @@
         </div>
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">BIO / STATEMENT</label>
-          <textarea id="reg-bio" rows="2" placeholder="작가의 작업 세계관 및 이력 소개..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white resize-none"></textarea>
+          <textarea id="reg-bio" rows="2" placeholder="대흥동에서의 작업 배경 및 작가 소개..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white resize-none"></textarea>
         </div>
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">PROFILE IMAGE (LOCAL PC UPLOAD)</label>
@@ -307,7 +283,7 @@
             <input type="file" id="reg-avatar-file" accept="image/*" onchange="handleAvatarFileSelect(this)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
             <div id="reg-avatar-preview-container" class="flex items-center justify-center gap-3">
               <i class="fa-solid fa-cloud-arrow-up text-zinc-500 text-lg"></i>
-              <span id="reg-avatar-label" class="font-mono text-[11px] text-zinc-400">PC 파일 선택 또는 드래그</span>
+              <span id="reg-avatar-label" class="font-mono text-[11px] text-zinc-400">PC 프로필 이미지 선택</span>
             </div>
           </div>
         </div>
@@ -329,22 +305,24 @@
         <h3 class="font-display text-2xl font-extrabold uppercase flex items-center gap-2">
           <i class="fa-solid fa-square-plus"></i> NEW WORK UPLOAD
         </h3>
-        <p class="font-mono text-xs text-zinc-400 mt-1">PC의 이미지 파일로 작품을 즉시 등록하고 QR코드를 발급받으세요.</p>
+        <p class="font-mono text-xs text-zinc-400 mt-1">PC의 이미지 파일로 대흥동 아카이브에 작품을 등록하세요.</p>
       </div>
 
       <form onsubmit="handleCreateArtwork(event)" class="space-y-4">
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">WORK TITLE *</label>
-          <input type="text" id="art-title" required placeholder="예: 무제 (Untitled) #01" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
+          <input type="text" id="art-title" required placeholder="예: 대흥동 근대건축 요소 연구 #01" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white">
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">MEDIUM / CATEGORY</label>
+            <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">CATEGORY *</label>
             <select id="art-category" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white font-mono">
+              <option value="ARCHITECTURE">ARCHITECTURE (건축 / 공간)</option>
               <option value="PAINTING">PAINTING (회화)</option>
-              <option value="SCULPTURE">SCULPTURE (조형/조각)</option>
-              <option value="DIGITAL">DIGITAL (디지털 아트)</option>
+              <option value="SCULPTURE">SCULPTURE (조형 / 조각)</option>
+              <option value="INSTALLATION">INSTALLATION (설치 미술)</option>
+              <option value="DIGITAL">DIGITAL (디지털 / 미디어)</option>
               <option value="PHOTOGRAPHY">PHOTOGRAPHY (사진)</option>
             </select>
           </div>
@@ -362,14 +340,14 @@
             <div id="art-file-preview-box" class="flex flex-col items-center justify-center gap-2">
               <i class="fa-solid fa-file-arrow-up text-2xl text-zinc-400"></i>
               <span id="art-file-name" class="font-mono text-xs text-zinc-300 font-bold">내 PC에서 이미지 파일 선택</span>
-              <span class="text-[10px] text-zinc-500 font-mono">PNG, JPG, WEBP 지원 (클릭 또는 파일 드래그)</span>
+              <span class="text-[10px] text-zinc-500 font-mono">PNG, JPG, WEBP 지원 (클릭 또는 드래그)</span>
             </div>
           </div>
         </div>
 
         <div>
           <label class="block font-mono text-xs uppercase text-zinc-400 mb-1">WORK DESCRIPTION</label>
-          <textarea id="art-desc" rows="3" placeholder="작품 기획 의도, 크기, 기법 등의 설명을 작성하세요." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white resize-none"></textarea>
+          <textarea id="art-desc" rows="3" placeholder="작품 기획 의도, 건축 도면 설명, 도심 아카이빙 배경 등..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white focus:outline-none focus:border-white resize-none"></textarea>
         </div>
 
         <button type="submit" class="btn-sharp w-full py-3 text-xs mt-2 flex items-center justify-center gap-2">
@@ -400,7 +378,7 @@
       </button>
 
       <div class="inline-block border border-white bg-black px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-zinc-300 mb-4">
-        EXHIBITION WALL TAG // QR
+        DAEHEUNG EXHIBITION TAG // QR
       </div>
       <h3 id="qr-modal-title" class="font-display font-black text-2xl uppercase tracking-tight">TITLE</h3>
       <p id="qr-modal-artist" class="font-mono text-xs text-zinc-400 mt-1 mb-6">BY ARTIST NAME</p>
@@ -410,7 +388,7 @@
         <div id="qr-code-box" class="flex justify-center items-center"></div>
       </div>
 
-      <p class="font-mono text-[11px] text-zinc-400 mb-6">카메라 스캔 시 고유 작품 웹 아카이브로 직연결됩니다.</p>
+      <p class="font-mono text-[11px] text-zinc-400 mb-6">스마트폰 스캔 시 대흥동 아카이브 웹페이지로 연결됩니다.</p>
 
       <div class="flex gap-3">
         <button onclick="copyQRLink()" class="flex-1 py-3 border border-zinc-700 bg-zinc-900 hover:bg-white hover:text-black text-white font-mono text-xs font-bold uppercase transition-colors">
@@ -428,14 +406,13 @@
        1. INITIAL SEED DATA & STATE
        ========================================================================== */
 
-    // Crisp high-contrast placeholder SVG generators for fallback
     function generatePlaceholderSVG(title, subtitle) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" fill="#000000">
         <rect width="600" height="600" fill="#0d0d0d"/>
         <line x1="0" y1="0" x2="600" y2="600" stroke="#262626" stroke-width="2"/>
         <line x1="600" y1="0" x2="0" y2="600" stroke="#262626" stroke-width="2"/>
         <rect x="150" y="150" width="300" height="300" fill="#000000" stroke="#ffffff" stroke-width="4"/>
-        <text x="300" y="290" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="24" font-weight="bold">${title}</text>
+        <text x="300" y="290" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="22" font-weight="bold">${title}</text>
         <text x="300" y="330" text-anchor="middle" fill="#888888" font-family="monospace" font-size="14">${subtitle}</text>
       </svg>`;
       return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
@@ -444,18 +421,18 @@
     const initialArtists = [
       {
         id: "artist_1",
-        name: "KIM MONO (김모노)",
+        name: "김모노 (KIM MONO)",
         password: "demo",
-        bio: "흑과 백, 건축적 그리드와 명암의 극단적 대치를 서사적으로 시각화하는 그래픽 아티스트입니다.",
-        avatar: generatePlaceholderSVG("KIM MONO", "ARTIST PROFILE"),
+        bio: "대흥동 근대 건축물과 정방형 그리드의 구조적 미학을 연구하고 오프라인 캡션으로 시각화하는 예술가입니다.",
+        avatar: generatePlaceholderSVG("KIM MONO", "DAEHEUNG ARTIST"),
         createdAt: "2026-01-10"
       },
       {
         id: "artist_2",
-        name: "RACHEL VOID",
+        name: "박건축 (PARK ARCHI)",
         password: "demo",
-        bio: "Sculpting void geometry and structural shadows in high-contrast physical mediums.",
-        avatar: generatePlaceholderSVG("RACHEL VOID", "ARTIST PROFILE"),
+        bio: "구도심 대흥동의 오래된 상가 기둥 및 건축 공간 형태를 3D 및 드로잉 아카이빙으로 재해석합니다.",
+        avatar: generatePlaceholderSVG("PARK ARCHI", "DAEHEUNG ARTIST"),
         createdAt: "2026-02-15"
       }
     ];
@@ -463,42 +440,42 @@
     const initialArtworks = [
       {
         id: "art_101",
-        artistId: "artist_1",
-        artistName: "KIM MONO (김모노)",
-        title: "BRUTALIST STRUCTURE #01",
-        category: "PAINTING",
+        artistId: "artist_2",
+        artistName: "박건축 (PARK ARCHI)",
+        title: "대흥동 구도심 상가 입면 아카이브 #01",
+        category: "ARCHITECTURE",
         year: 2026,
-        image: generatePlaceholderSVG("STRUCTURE #01", "PAINTING / 2026"),
-        description: "강렬한 직선과 명암 오프셋 기법을 활용하여 기하학적 몰입감을 표현한 대형 아크릴 필드 작업.",
+        image: generatePlaceholderSVG("DAEHEUNG ARCHI #01", "ARCHITECTURE / 2026"),
+        description: "1970년대 대흥동 구도심 건축물의 기하학적 그리드와 벽면의 명암 구도를 비례 도면으로 기록한 연구 작품.",
         createdAt: "2026-03-01"
       },
       {
         id: "art_102",
         artistId: "artist_1",
-        artistName: "KIM MONO (김모노)",
-        title: "MONOCHROME GRID ECHO",
-        category: "DIGITAL",
+        artistName: "김모노 (KIM MONO)",
+        title: "BRUTALIST STRUCTURE NO. 04",
+        category: "PAINTING",
         year: 2026,
-        image: generatePlaceholderSVG("GRID ECHO", "DIGITAL / 2026"),
-        description: "디지털 스크린의 수평선과 픽셀 배열을 오마주한 알고리즘 생성 아트워크.",
+        image: generatePlaceholderSVG("STRUCTURE NO.04", "PAINTING / 2026"),
+        description: "강렬한 직선 오프셋과 흑백 명암 단차를 통해 공간감을 극대화한 아크릴 필드 작업.",
         createdAt: "2026-03-05"
       },
       {
         id: "art_103",
-        artistId: "artist_2",
-        artistName: "RACHEL VOID",
-        title: "SILENT MONOLITH NO. 4",
-        category: "SCULPTURE",
+        artistId: "artist_1",
+        artistName: "김모노 (KIM MONO)",
+        title: "MONOCHROME VOID INSTALLATION",
+        category: "INSTALLATION",
         year: 2025,
-        image: generatePlaceholderSVG("MONOLITH NO.4", "SCULPTURE / 2025"),
-        description: "Heavy steel geometry absorbing ambient light in spatial installation settings.",
+        image: generatePlaceholderSVG("VOID INSTALLATION", "INSTALLATION / 2025"),
+        description: "대흥동 야외 관람객을 위해 철제 프레임과 암묵적 그림자를 결합한 고대비 공간 설치물.",
         createdAt: "2026-03-10"
       }
     ];
 
-    let artists = JSON.parse(localStorage.getItem('mono_artists')) || initialArtists;
-    let artworks = JSON.parse(localStorage.getItem('mono_artworks')) || initialArtworks;
-    let currentUser = JSON.parse(localStorage.getItem('mono_user')) || null;
+    let artists = JSON.parse(localStorage.getItem('daeheung_artists')) || initialArtists;
+    let artworks = JSON.parse(localStorage.getItem('daeheung_artworks')) || initialArtworks;
+    let currentUser = JSON.parse(localStorage.getItem('daeheung_user')) || null;
 
     let activeFilterCategory = 'All';
     let activeQRDetailArt = null;
@@ -507,12 +484,12 @@
 
     function saveData() {
       try {
-        localStorage.setItem('mono_artists', JSON.stringify(artists));
-        localStorage.setItem('mono_artworks', JSON.stringify(artworks));
+        localStorage.setItem('daeheung_artists', JSON.stringify(artists));
+        localStorage.setItem('daeheung_artworks', JSON.stringify(artworks));
         if (currentUser) {
-          localStorage.setItem('mono_user', JSON.stringify(currentUser));
+          localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
         } else {
-          localStorage.removeItem('mono_user');
+          localStorage.removeItem('daeheung_user');
         }
       } catch(e) {
         showToast('저장 용량이 초과되었습니다. 이미지 크기를 줄여주세요.', 'error');
@@ -644,13 +621,13 @@
         return;
       }
 
-      const avatar = tempUploadedAvatarBase64 || generatePlaceholderSVG(name.toUpperCase(), "ARTIST PROFILE");
+      const avatar = tempUploadedAvatarBase64 || generatePlaceholderSVG(name.toUpperCase(), "DAEHEUNG ARTIST");
 
       const newArtist = {
         id: `artist_${Date.now()}`,
         name,
         password,
-        bio: bio || '소개글이 작성되지 않았습니다.',
+        bio: bio || '대흥동 기반 작가 소개가 입력되지 않았습니다.',
         avatar,
         createdAt: new Date().toISOString().split('T')[0]
       };
@@ -719,12 +696,10 @@
       if (input.files && input.files[0]) {
         const file = input.files[0];
         
-        // Read image file from local PC
         const reader = new FileReader();
         reader.onload = function(e) {
           tempUploadedArtBase64 = e.target.result;
           
-          // Preview selected file in dropzone
           const box = document.getElementById('art-file-preview-box');
           box.innerHTML = `
             <img src="${tempUploadedArtBase64}" class="h-32 object-contain border border-white my-2">
@@ -767,7 +742,6 @@
 
       showToast(`'${newArt.title}' 작품 등록 완료!`);
 
-      // Reset Form State
       tempUploadedArtBase64 = null;
       document.getElementById('art-file-preview-box').innerHTML = `
         <i class="fa-solid fa-file-arrow-up text-2xl text-zinc-400"></i>
@@ -893,7 +867,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
               <div>
                 <h2 class="font-display text-3xl font-black uppercase text-white tracking-tight">${artist.name}</h2>
-                <span class="font-mono text-xs text-zinc-500 uppercase">[ REGISTERED ARTIST ]</span>
+                <span class="font-mono text-xs text-zinc-500 uppercase">[ REGISTERED DAEHEUNG ARTIST ]</span>
               </div>
               ${currentUser && currentUser.id === artist.id ? `
                 <button onclick="openArtworkModal()" class="btn-sharp px-4 py-2 text-xs">
@@ -979,7 +953,7 @@
               <div id="detail-qr-box" class="p-2 bg-white border border-white flex-shrink-0"></div>
               <div>
                 <span class="font-mono text-[10px] font-bold text-white uppercase block mb-1">[ EXHIBITION QR LINK ]</span>
-                <p class="font-mono text-[11px] text-zinc-400 leading-tight">스마트폰 스캔 시 본 작품으로 연결되는 QR 코드입니다.</p>
+                <p class="font-mono text-[11px] text-zinc-400 leading-tight">스마트폰 스캔 시 본 작품 아카이브로 연결되는 고유 QR 코드입니다.</p>
                 <button onclick="openQRModal('${art.id}')" class="font-mono text-xs text-white underline font-bold mt-2 block">
                   QR 라벨 크게보기 / 인쇄 &rarr;
                 </button>
@@ -1072,7 +1046,7 @@
             <div class="title">${activeQRDetailArt.title}</div>
             <div class="artist">BY ${activeQRDetailArt.artistName} (${activeQRDetailArt.year})</div>
             <div id="print-qr" class="qr-box"></div>
-            <div class="footer">MONO // ARTIST ARCHIVE</div>
+            <div class="footer">대흥동 예술가 아카이빙</div>
           </div>
           <script>
             new QRCode(document.getElementById('print-qr'), {
