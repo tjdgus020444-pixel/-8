@@ -5,18 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>대흥동 예술가 아카이빙 : DAEHEUNG ARTIST ARCHIVE</title>
   
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- QRCode.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&family=Space+Grotesk:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDK -->
+  <!-- Firebase SDK (Firestore 전용 - Storage 완전히 제거) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -25,10 +21,8 @@
       apiKey: "AIzaSyB9FO8x6YQOSj78X-Nx8tpIxlxTNKyA3Xo",
       authDomain: "architecture8-a41e4.firebaseapp.com",
       projectId: "architecture8-a41e4",
-      storageBucket: "architecture8-a41e4.firebasestorage.app",
       messagingSenderId: "675299744571",
-      appId: "1:675299744571:web:f9aee1adc57312bd64751e",
-      measurementId: "G-2466Q9TCWE"
+      appId: "1:675299744571:web:f9aee1adc57312bd64751e"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -74,7 +68,7 @@
     }
   </style>
 </head>
-<body class="min-h-full flex flex-col font-sans bg-black text-white selection:bg-white selection:text-black border-t-4 border-white">
+<body class="min-h-full flex flex-col font-sans bg-black text-white border-t-4 border-white">
 
   <!-- HEADER -->
   <header class="sticky top-0 z-40 bg-black border-b border-white/20 px-4 lg:px-8 py-4">
@@ -283,7 +277,7 @@
 
     function openArtworkModal() { document.getElementById('artwork-modal').classList.remove('hidden'); }
 
-    // 이미지 리사이징 함수 (Firestore 1MB 한도 초과 방지)
+    // 이미지 경량화 압축 함수
     function resizeImage(file, maxWidth, maxHeight, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -302,7 +296,7 @@
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          callback(canvas.toDataURL('image/jpeg', 0.7)); // 70% 품질 압축
+          callback(canvas.toDataURL('image/jpeg', 0.5));
         };
         img.src = e.target.result;
       };
@@ -329,8 +323,7 @@
         return;
       }
 
-      // 이미지 자동 압축 후 Firestore에 저장
-      resizeImage(fileInput.files[0], 800, 800, function(resizedBase64) {
+      resizeImage(fileInput.files[0], 500, 500, function(resizedBase64) {
         db.collection("artworks").add({
           title,
           category,
@@ -343,11 +336,11 @@
           btn.innerText = "작품 등록 (실시간 공유) →";
           btn.disabled = false;
           closeModal('artwork-modal');
-          alert("작품 등록 완료! 다른 기기에서도 즉시 동기화됩니다.");
+          alert("작품 등록 성공! 실시간으로 저장되었습니다.");
         }).catch(err => {
           btn.innerText = "작품 등록 (실시간 공유) →";
           btn.disabled = false;
-          alert("저장 실패 (Firebase 규칙 설정을 확인하세요): " + err.message);
+          alert("저장 실패: " + err.message);
         });
       });
     }
