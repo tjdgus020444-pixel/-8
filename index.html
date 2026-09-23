@@ -186,7 +186,10 @@
           <option value="SCULPTURE">SCULPTURE (조형)</option>
           <option value="INSTALLATION">INSTALLATION (설치)</option>
         </select>
-        <input type="file" id="art-file" accept="image/*" required class="w-full bg-black border border-zinc-700 p-2 text-xs text-white">
+        <div>
+          <label class="block font-mono text-[10px] text-zinc-400 uppercase mb-1">이미지 업로드 (여러 개 선택 가능)</label>
+          <input type="file" id="art-files" accept="image/*" multiple required class="w-full bg-black border border-zinc-700 p-2 text-xs text-white">
+        </div>
         <textarea id="art-desc" rows="3" placeholder="작품 설명..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
         <button type="submit" id="submit-art-btn" class="btn-sharp w-full py-3 text-xs">작품 등록 (실시간 공유) &rarr;</button>
       </form>
@@ -199,9 +202,10 @@
       <button onclick="closeModal('detail-modal')" class="absolute top-4 right-4 text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
       
       <div class="flex flex-col md:flex-row gap-6">
-        <!-- Image -->
-        <div class="w-full md:w-1/2">
+        <!-- Main Image & Thumbnails -->
+        <div class="w-full md:w-1/2 flex flex-col gap-2">
           <img id="detail-img" src="" class="w-full aspect-square object-cover border-2 border-white">
+          <div id="detail-thumbnails" class="flex gap-2 overflow-x-auto py-1"></div>
         </div>
         
         <!-- Info & QR -->
@@ -218,7 +222,7 @@
             <div id="qrcode" class="p-1 bg-white border border-white"></div>
             <div>
               <p class="font-mono text-[10px] text-zinc-400 uppercase font-bold">[ ARTWORK QR CODE ]</p>
-              <p class="text-[11px] text-zinc-300 mt-1">스마트폰 카메라인식 시 이 작품으로 바로 연결됩니다.</p>
+              <p class="text-[11px] text-zinc-300 mt-1">스마트폰 스캔 시 이 작품으로 직접 진입합니다.</p>
             </div>
           </div>
         </div>
@@ -229,7 +233,6 @@
   <script>
     let currentUser = JSON.parse(localStorage.getItem('daeheung_user')) || null;
     let allArtworks = [];
-    let qrcodeObj = null;
 
     window.onload = function() {
       renderAuthWidget();
@@ -248,13 +251,21 @@
       if (currentUser) {
         container.innerHTML = `
           <span class="font-mono text-xs text-white font-bold">${currentUser.name}</span>
-          <button onclick="openArtworkModal()" class="btn-sharp px-3 py-1.5 text-xs">+ UPLOAD</button>
+          <button onclick="openArtworkModal()" class="btn-sharp px-3 py-1 text-xs">+ UPLOAD</button>
+          <button onclick="handleLogout()" class="border border-zinc-700 bg-zinc-900 hover:bg-white hover:text-black text-zinc-300 font-bold px-2.5 py-1 text-[11px] uppercase transition-colors">[ LOGOUT ]</button>
         `;
       } else {
         container.innerHTML = `
           <button onclick="openAuthModal('login')" class="btn-sharp px-3 py-1.5 text-xs">LOGIN / REGISTER</button>
         `;
       }
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      localStorage.removeItem('daeheung_user');
+      renderAuthWidget();
+      alert("로그아웃되었습니다.");
     }
 
     function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
@@ -322,6 +333,7 @@
 
     function openArtworkModal() { document.getElementById('artwork-modal').classList.remove('hidden'); }
 
+    // 고화질 이미지 압축 및 변환 함수 (최대 1200px)
     function resizeImage(file, maxWidth, maxHeight, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -340,7 +352,7 @@
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          callback(canvas.toDataURL('image/jpeg', 0.5));
+          callback(canvas.toDataURL('image/jpeg', 0.82)); // 선명도를 위한 82% 고화질
         };
         img.src = e.target.result;
       };
@@ -358,41 +370,60 @@
       const title = document.getElementById('art-title').value.trim();
       const category = document.getElementById('art-category').value;
       const desc = document.getElementById('art-desc').value.trim();
-      const fileInput = document.getElementById('art-file');
+      const files = document.getElementById('art-files').files;
 
-      if (!fileInput.files[0]) {
-        alert("이미지를 선택해주세요.");
+      if (!files || files.length === 0) {
+        alert("최소 1개의 이미지를 선택해주세요.");
         btn.innerText = "작품 등록 (실시간 공유) →";
         btn.disabled = false;
         return;
       }
 
-      resizeImage(fileInput.files[0], 500, 500, function(resizedBase64) {
-        db.collection("artworks").add({
-          title,
-          category,
-          desc,
-          imageUrl: resizedBase64,
-          artistId: currentUser.id,
-          artistName: currentUser.name,
-          createdAt: new Date().toISOString()
-        }).then(() => {
-          btn.innerText = "작품 등록 (실시간 공유) →";
-          btn.disabled = false;
-          closeModal('artwork-modal');
-          alert("작품 등록 성공! 실시간으로 저장되었습니다.");
-        }).catch(err => {
-          btn.innerText = "작품 등록 (실시간 공유) →";
-          btn.disabled = false;
-          alert("저장 실패: " + err.message);
+      // 다중 이미지 동시 변환
+      let imageBase64List = [];
+      let loadedCount = 0;
+
+      for (let i = 0; i < files.length; i++) {
+        resizeImage(files[i], 1200, 1200, function(resizedBase64) {
+          imageBase64List[i] = resizedBase64;
+          loadedCount++;
+
+          if (loadedCount === files.length) {
+            db.collection("artworks").add({
+              title,
+              category,
+              desc,
+              imageUrl: imageBase64List[0], // 대표 이미지
+              images: imageBase64List,       // 전체 이미지 리스트
+              artistId: currentUser.id,
+              artistName: currentUser.name,
+              createdAt: new Date().toISOString()
+            }).then(() => {
+              btn.innerText = "작품 등록 (실시간 공유) →";
+              btn.disabled = false;
+              closeModal('artwork-modal');
+              alert("작품 등록 성공! 고화질 이미지들이 실시간 저장되었습니다.");
+            }).catch(err => {
+              btn.innerText = "작품 등록 (실시간 공유) →";
+              btn.disabled = false;
+              alert("저장 실패: " + err.message);
+            });
+          }
         });
-      });
+      }
     }
 
     function loadArtworksFromFirebase() {
       db.collection("artworks").orderBy("createdAt", "desc").onSnapshot(snapshot => {
         allArtworks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderGalleryGrid(allArtworks);
+
+        // QR 코드를 스캔하고 진입 시 자동으로 해당 작품 팝업 오픈
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetArtId = urlParams.get('artId');
+        if (targetArtId) {
+          openDetailModal(targetArtId);
+        }
       }, err => console.error(err));
     }
 
@@ -417,19 +448,35 @@
       const art = allArtworks.find(a => a.id === artId);
       if (!art) return;
 
-      document.getElementById('detail-img').src = art.imageUrl;
+      const images = art.images && art.images.length > 0 ? art.images : [art.imageUrl];
+
+      const mainImg = document.getElementById('detail-img');
+      mainImg.src = images[0];
+
+      // 썸네일 영역 처리
+      const thumbContainer = document.getElementById('detail-thumbnails');
+      if (images.length > 1) {
+        thumbContainer.innerHTML = images.map((img, idx) => `
+          <img src="${img}" onclick="setMainImage('${img}')" class="w-12 h-12 object-cover border border-zinc-700 cursor-pointer hover:border-white">
+        `).join('');
+        thumbContainer.classList.remove('hidden');
+      } else {
+        thumbContainer.innerHTML = '';
+        thumbContainer.classList.add('hidden');
+      }
+
       document.getElementById('detail-category').innerText = art.category;
       document.getElementById('detail-title').innerText = art.title;
       document.getElementById('detail-artist').innerText = `BY ${art.artistName}`;
       document.getElementById('detail-desc').innerText = art.desc || "설명이 없습니다.";
 
-      // Generate QR Code
+      // QR 코드 생성 (스캔 시 해당 작품 ID 주소로 Direct 진입)
       const qrContainer = document.getElementById('qrcode');
       qrContainer.innerHTML = "";
       
-      const currentUrl = window.location.href.split('?')[0] + `?artId=${art.id}`;
+      const currentUrl = window.location.origin + window.location.pathname + `?artId=${art.id}`;
       
-      qrcodeObj = new QRCode(qrContainer, {
+      new QRCode(qrContainer, {
         text: currentUrl,
         width: 80,
         height: 80,
@@ -439,6 +486,10 @@
       });
 
       document.getElementById('detail-modal').classList.remove('hidden');
+    }
+
+    function setMainImage(src) {
+      document.getElementById('detail-img').src = src;
     }
 
     function loadArtistsFromFirebase() {
