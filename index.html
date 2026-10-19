@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>대흥동 예술가 아카이빙 : DAEHEUNG ARTIST ARCHIVE</title>
+  <title>Art-rang (아트랑) : 대흥동 예술 통합 플랫폼</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,18 +82,22 @@
   <header class="sticky top-0 z-40 bg-black border-b border-white/20 px-4 lg:px-8 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <a href="#" onclick="showSection('gallery')" class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-white text-black font-display font-black text-2xl flex items-center justify-center border border-white">
-          大
+        <!-- ART-RANG SIGNATURE ICON (Art-rang Logo) -->
+        <div class="w-10 h-10 bg-white text-black font-display font-black text-xl flex items-center justify-center border border-white relative">
+          R<span class="text-[9px] absolute -top-1 -right-1 bg-black text-white px-0.5 font-mono">with</span>
         </div>
         <div>
-          <span class="font-display font-extrabold text-xl tracking-tighter uppercase block leading-none">대흥동 예술가 아카이빙</span>
-          <span class="font-mono text-[10px] text-zinc-400 tracking-widest uppercase block mt-1">DAEHEUNG ARTIST ARCHIVE</span>
+          <span class="font-display font-extrabold text-xl tracking-tighter uppercase block leading-none">Art-rang (아트랑)</span>
+          <span class="font-mono text-[10px] text-zinc-400 tracking-widest uppercase block mt-1">DAEHEUNG ART WITH PLATFORM</span>
         </div>
       </a>
 
+      <!-- GNB: ART-RANG 4대 실무 연동 -->
       <nav class="hidden md:flex items-center gap-8 text-xs tracking-widest uppercase font-bold">
-        <button onclick="showSection('gallery')" id="nav-gallery" class="text-white border-b-2 border-white pb-1">ALL WORKS</button>
-        <button onclick="showSection('artists')" id="nav-artists" class="text-zinc-500 hover:text-white border-b-2 border-transparent pb-1">ARTISTS DIRECTORY</button>
+        <button onclick="showSection('gallery')" id="nav-gallery" class="text-white border-b-2 border-white pb-1">오픈 수장고 (DEPOT)</button>
+        <button onclick="showSection('pairing')" id="nav-pairing" class="text-zinc-500 hover:text-white border-b-2 border-transparent pb-1">F&B 매칭 (PAIRING)</button>
+        <button onclick="showSection('artists')" id="nav-artists" class="text-zinc-500 hover:text-white border-b-2 border-transparent pb-1">참여 작가 (ARTISTS)</button>
+        <button onclick="showSection('cashback')" id="nav-cashback" class="text-zinc-500 hover:text-white border-b-2 border-transparent pb-1">컬처 캐시백</button>
       </nav>
 
       <div id="auth-widget" class="flex items-center gap-4"></div>
@@ -102,51 +106,107 @@
 
   <!-- MAIN -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-8">
+    
+    <!-- 1. OPEN DEPOT & GALLERY SECTION -->
     <section id="section-gallery" class="space-y-8">
       <div class="border-2 border-white p-6 md:p-10 bg-black relative shadow-sharp-white">
-        <div class="max-w-2xl relative z-10">
+        <div class="max-w-3xl relative z-10">
           <div class="inline-block px-3 py-1 bg-white text-black font-mono text-[11px] font-bold uppercase tracking-widest mb-4">
-            [ FIREBASE REALTIME SYNC ONLINE ]
+            [ ART-RANG OPEN DEPOT & PAIRING SYSTEM ]
           </div>
-          <h1 class="font-display text-4xl md:text-5xl font-extrabold uppercase tracking-tight leading-none mb-4">
-            대흥동 예술가<br>작품 아카이브 & QR
+          <h1 class="font-display text-3xl md:text-5xl font-extrabold uppercase tracking-tight leading-none mb-4">
+            대흥동의 모든 것,<br><span class="text-zinc-400">예술과 함께(Art-rang)</span>
           </h1>
           <p class="text-zinc-400 text-sm leading-relaxed mb-6">
-            모든 기기에서 실시간 공유되는 대흥동 지역 작가 포트폴리오 플랫폼입니다. 작품을 클릭하면 개별 연동 QR 코드가 표시됩니다.
+            1층 F&B 상권의 활력에 예술을 레이어링하는 자생적 문화예술 플랫폼입니다. 오픈 수장고 작품 탐색, F&B 매장 1:1 매칭, 체류형 클래스 예약을 한곳에서 이용하세요.
           </p>
           <div class="flex flex-wrap gap-4">
             <button onclick="handleRegisterArtBtnClick()" class="btn-sharp px-6 py-3 text-xs flex items-center gap-2">
-              <i class="fa-solid fa-plus"></i> 작품 등록하기
+              <i class="fa-solid fa-plus"></i> 수장고 작품 등록
             </button>
-            <button onclick="showSection('artists')" class="px-6 py-3 border border-zinc-700 bg-zinc-900 text-white text-xs font-bold uppercase">
-              작가 목록 둘러보기
+            <button onclick="showSection('pairing')" class="px-6 py-3 border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold uppercase">
+              F&B 제휴 매장 지도 보기
             </button>
           </div>
         </div>
       </div>
 
+      <!-- CATEGORY FILTER -->
       <div class="border border-white/20 p-4 bg-zinc-950 flex flex-col md:flex-row justify-between items-center gap-4">
         <div id="category-filters" class="flex items-center gap-2 overflow-x-auto font-mono text-xs w-full md:w-auto">
           <button onclick="filterGallery('All')" class="cat-btn px-3 py-1.5 bg-white text-black font-bold uppercase border border-white">ALL</button>
-          <button onclick="filterGallery('ARCHITECTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">ARCHITECTURE (건축)</button>
           <button onclick="filterGallery('PAINTING')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">PAINTING (회화)</button>
+          <button onclick="filterGallery('CRAFT')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">CRAFT (공예/식기)</button>
           <button onclick="filterGallery('SCULPTURE')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">SCULPTURE (조형)</button>
-          <button onclick="filterGallery('INSTALLATION')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">INSTALLATION (설치)</button>
+          <button onclick="filterGallery('ILLUST')" class="cat-btn px-3 py-1.5 bg-black text-zinc-400 font-bold uppercase border border-zinc-800">ILLUST/POP (일러스트)</button>
         </div>
       </div>
 
+      <!-- ARTWORK GRID -->
       <div id="artwork-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </section>
 
+    <!-- 2. F&B PAIRING LAB SECTION -->
+    <section id="section-pairing" class="hidden space-y-6">
+      <div class="border-b-2 border-white pb-4">
+        <h2 class="font-display text-3xl font-extrabold uppercase">F&B × FINE ART PAIRING MAP</h2>
+        <p class="text-zinc-400 text-xs font-mono mt-1">대흥동 1층 카페·주점·식당과 로컬 작가의 1:1 매칭 현황입니다.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="border-2 border-white bg-black p-5 shadow-sharp-gray">
+          <span class="font-mono text-[10px] bg-white text-black font-bold px-1 py-0.5">ZONE A : CAFE</span>
+          <h3 class="font-bold text-lg mt-2">카페 쌍리 × 정통 회화</h3>
+          <p class="text-xs text-zinc-400 mt-1">음료 대기시간 5분 DIY 팝업 및 Work-in-Progress 유리 화실 연계</p>
+          <div class="mt-4 pt-3 border-t border-zinc-800 flex justify-between items-center font-mono text-xs">
+            <span class="text-emerald-400">● LIVE EXHIBITION</span>
+            <span class="text-zinc-500">대흥로 175</span>
+          </div>
+        </div>
+        <div class="border-2 border-white bg-black p-5 shadow-sharp-gray">
+          <span class="font-mono text-[10px] bg-white text-black font-bold px-1 py-0.5">ZONE B : PUB</span>
+          <h3 class="font-bold text-lg mt-2">이억만 포차 × 일러스트/미디어</h3>
+          <p class="text-xs text-zinc-400 mt-1">수제 공예 막걸리 잔 실사용 및 야간 가로 미디어 파사드 시연</p>
+          <div class="mt-4 pt-3 border-t border-zinc-800 flex justify-between items-center font-mono text-xs">
+            <span class="text-emerald-400">● LIVE EXHIBITION</span>
+            <span class="text-zinc-500">중앙로 130</span>
+          </div>
+        </div>
+        <div class="border-2 border-white bg-black p-5 shadow-sharp-gray">
+          <span class="font-mono text-[10px] bg-white text-black font-bold px-1 py-0.5">ZONE C : DINING</span>
+          <h3 class="font-bold text-lg mt-2">후발대 고깃집 × 소형 3D 조형</h3>
+          <p class="text-xs text-zinc-400 mt-1">테이블 탑 미니 갤러리 매립 및 점주 스토리 도슨트 가이드 제공</p>
+          <div class="mt-4 pt-3 border-t border-zinc-800 flex justify-between items-center font-mono text-xs">
+            <span class="text-emerald-400">● LIVE EXHIBITION</span>
+            <span class="text-zinc-500">보문로 200</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. ARTISTS DIRECTORY SECTION -->
     <section id="section-artists" class="hidden space-y-6">
       <div class="border-b-2 border-white pb-4 flex justify-between items-end">
         <div>
-          <h2 class="font-display text-3xl font-extrabold uppercase">REGISTERED ARTISTS</h2>
-          <p class="text-zinc-400 text-xs font-mono mt-1">등록된 작가 목록입니다.</p>
+          <h2 class="font-display text-3xl font-extrabold uppercase">ART-RANG REGISTERED ARTISTS</h2>
+          <p class="text-zinc-400 text-xs font-mono mt-1">아트랑 플랫폼에 등록된 대흥동 로컬 순수예술가 목록입니다.</p>
         </div>
         <button onclick="openAuthModal('register')" class="btn-sharp px-4 py-2 text-xs">+ 작가 등록</button>
       </div>
       <div id="artists-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- 4. CULTURE CASHBACK SECTION -->
+    <section id="section-cashback" class="hidden space-y-6">
+      <div class="border-2 border-white p-6 bg-black shadow-sharp-white">
+        <h2 class="font-display text-3xl font-extrabold uppercase mb-2">CULTURE CASHBACK SYSTEM</h2>
+        <p class="text-sm text-zinc-300 mb-4">
+          제휴 F&B 매장(식당·카페·주점)에서 결제 시 적립된 마일리지는 **상층부 소극장 티켓, 갤러리 굿즈 구매, 체류형 아카데미 수강료**로 환원되어 사용됩니다.
+        </p>
+        <div class="border border-zinc-800 p-4 bg-zinc-950 font-mono text-xs space-y-2">
+          <div class="flex justify-between"><span>나의 적립 포인트:</span><span class="font-bold text-white">12,500 P</span></div>
+          <div class="flex justify-between"><span>사용 가능 클래스:</span><span class="text-zinc-400">1~2시간 원데이 공예 수강권</span></div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -167,7 +227,7 @@
       <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
         <input type="text" id="reg-name" required placeholder="작가명" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
         <input type="password" id="reg-password" required placeholder="비밀번호" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
-        <textarea id="reg-bio" rows="2" placeholder="작가 소개..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
+        <textarea id="reg-bio" rows="2" placeholder="작가 소개 및 주 전문 장르..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
         <button type="submit" class="btn-sharp w-full py-3 text-xs">등록 완료 &rarr;</button>
       </form>
     </div>
@@ -177,21 +237,21 @@
   <div id="artwork-modal" class="fixed inset-0 z-50 bg-black/90 hidden flex items-center justify-center p-4">
     <div class="bg-black border-2 border-white max-w-lg w-full p-6 relative">
       <button onclick="closeModal('artwork-modal')" class="absolute top-4 right-4 text-white"><i class="fa-solid fa-xmark"></i></button>
-      <h3 class="font-display text-2xl font-extrabold uppercase mb-4">NEW WORK UPLOAD</h3>
+      <h3 class="font-display text-2xl font-extrabold uppercase mb-4">ART-RANG WORK UPLOAD</h3>
       <form onsubmit="handleCreateArtwork(event)" class="space-y-4">
         <input type="text" id="art-title" required placeholder="작품 제목" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white">
         <select id="art-category" class="w-full bg-black border border-zinc-700 p-3 text-xs text-white font-mono">
-          <option value="ARCHITECTURE">ARCHITECTURE (건축 / 공간)</option>
           <option value="PAINTING">PAINTING (회화)</option>
+          <option value="CRAFT">CRAFT (공예 / 식기)</option>
           <option value="SCULPTURE">SCULPTURE (조형)</option>
-          <option value="INSTALLATION">INSTALLATION (설치)</option>
+          <option value="ILLUST">ILLUST/POP (일러스트 / 웹툰)</option>
         </select>
         <div>
-          <label class="block font-mono text-[10px] text-zinc-400 uppercase mb-1">이미지 업로드 (Shift/Ctrl 클릭으로 여러 장 다중 선택 가능)</label>
+          <label class="block font-mono text-[10px] text-zinc-400 uppercase mb-1">작품 이미지 (다중 선택 가능)</label>
           <input type="file" id="art-files" accept="image/*" multiple required class="w-full bg-black border border-zinc-700 p-2 text-xs text-white">
         </div>
-        <textarea id="art-desc" rows="3" placeholder="작품 설명..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
-        <button type="submit" id="submit-art-btn" class="btn-sharp w-full py-3 text-xs">작품 등록 (실시간 공유) &rarr;</button>
+        <textarea id="art-desc" rows="3" placeholder="작품 설명 및 수장고 위탁/대여 조건..." class="w-full bg-black border border-zinc-700 p-3 text-xs text-white"></textarea>
+        <button type="submit" id="submit-art-btn" class="btn-sharp w-full py-3 text-xs">수장고 등록 (실시간 동기화) &rarr;</button>
       </form>
     </div>
   </div>
@@ -202,7 +262,6 @@
       <button onclick="closeModal('detail-modal')" class="absolute top-4 right-4 text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
       
       <div class="flex flex-col md:flex-row gap-6">
-        <!-- Main Image & Multi-Image Controls -->
         <div class="w-full md:w-1/2 flex flex-col gap-2">
           <div class="relative">
             <img id="detail-img" src="" class="w-full aspect-square object-cover border-2 border-white">
@@ -211,7 +270,6 @@
           <div id="detail-thumbnails" class="flex gap-2 overflow-x-auto py-1"></div>
         </div>
         
-        <!-- Info, Delete Button & QR -->
         <div class="w-full md:w-1/2 flex flex-col justify-between space-y-4">
           <div>
             <div class="flex items-center justify-between">
@@ -225,12 +283,11 @@
             <p id="detail-desc" class="text-xs text-zinc-300 mt-4 leading-relaxed whitespace-pre-line"></p>
           </div>
 
-          <!-- QR Section -->
           <div class="border border-zinc-800 p-4 bg-zinc-950 flex items-center gap-4">
             <div id="qrcode" class="p-1 bg-white border border-white"></div>
             <div>
-              <p class="font-mono text-[10px] text-zinc-400 uppercase font-bold">[ ARTWORK QR CODE ]</p>
-              <p class="text-[11px] text-zinc-300 mt-1">스마트폰 스캔 시 이 작품으로 직접 진입합니다.</p>
+              <p class="font-mono text-[10px] text-zinc-400 uppercase font-bold">[ ART-RANG QR CODE ]</p>
+              <p class="text-[11px] text-zinc-300 mt-1">스캔 시 F&B 테이블 도슨트 및 이 작품으로 직접 연결됩니다.</p>
             </div>
           </div>
         </div>
@@ -250,8 +307,11 @@
     };
 
     function showSection(name) {
-      document.getElementById('section-gallery').classList.add('hidden');
-      document.getElementById('section-artists').classList.add('hidden');
+      const sections = ['gallery', 'pairing', 'artists', 'cashback'];
+      sections.forEach(s => {
+        const el = document.getElementById(`section-${s}`);
+        if (el) el.classList.add('hidden');
+      });
       document.getElementById(`section-${name}`).classList.remove('hidden');
     }
 
@@ -311,7 +371,7 @@
         localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
         renderAuthWidget();
         closeModal('auth-modal');
-        alert("작가 등록 완료!");
+        alert("아트랑 작가 등록 완료!");
       }).catch(err => alert("등록 실패: " + err.message));
     }
 
@@ -328,7 +388,7 @@
             localStorage.setItem('daeheung_user', JSON.stringify(currentUser));
             renderAuthWidget();
             closeModal('auth-modal');
-            alert("로그인 성공!");
+            alert("아트랑 로그인 성공!");
           } else {
             alert("정보가 일치하지 않습니다.");
           }
@@ -342,7 +402,6 @@
 
     function openArtworkModal() { document.getElementById('artwork-modal').classList.remove('hidden'); }
 
-    // 이미지 다중 압축 함수
     function resizeImage(file, maxWidth, maxHeight, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -368,7 +427,6 @@
       reader.readAsDataURL(file);
     }
 
-    // 다중 이미지 업로드
     function handleCreateArtwork(e) {
       e.preventDefault();
       if (!currentUser) return;
@@ -385,7 +443,7 @@
 
       if (files.length === 0) {
         alert("이미지를 한 개 이상 선택해 주세요.");
-        btn.innerText = "작품 등록 (실시간 공유) →";
+        btn.innerText = "수장고 등록 (실시간 동기화) →";
         btn.disabled = false;
         return;
       }
@@ -409,12 +467,12 @@
               artistName: currentUser.name,
               createdAt: new Date().toISOString()
             }).then(() => {
-              btn.innerText = "작품 등록 (실시간 공유) →";
+              btn.innerText = "수장고 등록 (실시간 동기화) →";
               btn.disabled = false;
               closeModal('artwork-modal');
-              alert(`작품 등록 완! 총 ${resizedImages.length}장의 사진이 동기화되었습니다.`);
+              alert(`수장고 작품 등록 완료! 총 ${resizedImages.length}장의 사진이 연동되었습니다.`);
             }).catch(err => {
-              btn.innerText = "작품 등록 (실시간 공유) →";
+              btn.innerText = "수장고 등록 (실시간 동기화) →";
               btn.disabled = false;
               alert("저장 실패: " + err.message);
             });
@@ -428,7 +486,6 @@
         allArtworks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderGalleryGrid(allArtworks);
 
-        // QR 코드로 진입 시 자동 팝업 열기
         const urlParams = new URLSearchParams(window.location.search);
         const targetArtId = urlParams.get('artId');
         if (targetArtId) {
@@ -485,9 +542,8 @@
       document.getElementById('detail-category').innerText = art.category;
       document.getElementById('detail-title').innerText = art.title;
       document.getElementById('detail-artist').innerText = `BY ${art.artistName}`;
-      document.getElementById('detail-desc').innerText = art.desc || "등록된 설명이 없습니다.";
+      document.getElementById('detail-desc').innerText = art.desc || "등록된 수장고 위탁 설명이 없습니다.";
 
-      // 삭제 버튼 보임 여부 판단 (작품 작성자 본인 확인)
       const deleteBtn = document.getElementById('delete-art-btn');
       if (currentUser && (currentUser.id === art.artistId || currentUser.name === art.artistName)) {
         deleteBtn.classList.remove('hidden');
@@ -495,7 +551,6 @@
         deleteBtn.classList.add('hidden');
       }
 
-      // QR 코드 생성
       const qrContainer = document.getElementById('qrcode');
       qrContainer.innerHTML = "";
       
@@ -518,14 +573,13 @@
       document.getElementById('detail-img-count').innerText = `${current} / ${total}`;
     }
 
-    // 작품 삭제 함수
     function handleDeleteArtwork() {
       if (!currentDetailArtId) return;
 
-      if (confirm("정말로 이 작품을 삭제하시겠습니까? 삭제된 작품은 복구할 수 없습니다.")) {
+      if (confirm("정말로 이 작품을 수장고에서 삭제하시겠습니까?")) {
         db.collection("artworks").doc(currentDetailArtId).delete().then(() => {
           closeModal('detail-modal');
-          alert("작품이 정상적으로 삭제되었습니다.");
+          alert("작품이 삭제되었습니다.");
         }).catch(err => alert("삭제 실패: " + err.message));
       }
     }
@@ -536,9 +590,9 @@
         grid.innerHTML = snapshot.docs.map(doc => {
           const a = doc.data();
           return `
-            <div class="border-2 border-white bg-black p-6">
+            <div class="border-2 border-white bg-black p-6 shadow-sharp-gray">
               <h3 class="font-bold text-lg">${a.name}</h3>
-              <p class="text-xs text-zinc-400 mt-2">${a.bio}</p>
+              <p class="text-xs text-zinc-400 mt-2">${a.bio || "등록된 이력이 없습니다."}</p>
             </div>
           `;
         }).join('');
